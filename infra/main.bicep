@@ -32,4 +32,25 @@ module core 'modules/core.bicep' = {
     }
 }
 
+module ai 'modules/ai.bicep' = {
+    name: '${prefix}-ai-${environment}'
+    scope: rg
+    params: {
+        location: location
+        environment: environment
+        prefix: prefix
+        suffix: suffix
+    }
+}
+
 output resourceGroupName string = rg.name
+
+output storageAccountName string = core.outputs.storageAccountName
+output searchServiceName string = core.outputs.searchServiceName
+
+output foundryName string = ai.outputs.foundryName
+output foundryProjectName string = ai.outputs.foundryProjectName
+output foundryEndpoint string = ai.outputs.foundryEndpoint
+output documentIntelligenceName string = ai.outputs.documentIntelligenceName
+// output languageName string = ai.outputs.languageName
+output languageEndpoint string = ai.outputs.langungeEndpoint
