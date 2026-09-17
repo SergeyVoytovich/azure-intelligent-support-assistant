@@ -46,7 +46,7 @@ resource search 'Microsoft.Search/searchServices@2025-05-01' = {
   }
   properties: {
     replicaCount: 1
-    hostingMode: 'default'
+    hostingMode: 'Default'
     publicNetworkAccess: 'Enabled'
     disableLocalAuth: false
   }
