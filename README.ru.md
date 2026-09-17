@@ -3,13 +3,13 @@
 
 [English](README.md) | [Deutsch](README.de.md) | [Русский](README.ru.md)
 
-> A production-style intelligent customer support assistant built with .NET, Vue 3 and Azure AI services.
+> Production-style интеллектуальный ассистент клиентской поддержки на основе .NET, Vue 3 и Azure AI Services.
 
-## Status
+## Статус
 
-🚧 In development
+🚧 В разработке
 
-## Planned Technology Stack
+## Планируемый стек технологий
 
 - C# / .NET
 - Azure Functions
