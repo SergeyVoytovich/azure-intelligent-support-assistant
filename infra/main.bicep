@@ -8,7 +8,7 @@ param location string = 'germanywestcentral'
 param environment string = 'dev'
 
 var resourcerGroupName string = 'dev'
-var suffix  = uniqueString(subscription().id, environment)
+var suffix  = uniqueString(subscription().id, resourcerGroupName)
 var prefix = 'isa'
 
 resource rg 'Microsoft.Resources/resourceGroups@2024-11-01' = {
@@ -21,15 +21,15 @@ resource rg 'Microsoft.Resources/resourceGroups@2024-11-01' = {
     }
 }
 
-// module core 'modules/core.bicep' = {
-//     name: '${prefix}-core-${environment}'
-//     scope: rg
-//     params: {
-//         location: location
-//         environment: environment
-//         prefix: prefix
-//         uniqueString: suffix
-//     }
-// }
+module core 'modules/core.bicep' = {
+    name: '${prefix}-core-${environment}'
+    scope: rg
+    params: {
+        location: location
+        environment: environment
+        prefix: prefix
+        suffix: suffix
+    }
+}
 
 output resourceGroupName string = rg.name
