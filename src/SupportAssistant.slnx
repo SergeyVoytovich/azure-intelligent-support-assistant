@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="SupportAssistant.Application/SupportAssistant.Application.csproj" />
   <Project Path="SupportAssistant.Domain/SupportAssistant.Domain.csproj" />
 </Solution>
