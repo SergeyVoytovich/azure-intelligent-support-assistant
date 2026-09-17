@@ -24,7 +24,7 @@ public class ChatFunction(IChatService service, IMapper mapper)
             return new BadRequestObjectResult(new { error = "Questions is required" });
         }
 
-        var result = await Service.Handleasync(new ChatCommand(body.Question), cancellationToken);
+        var result = await Service.HandleAsync(new ChatCommand(body.Question), cancellationToken);
         var response = mapper.MapChatResponse(result, request);
         return new OkObjectResult(response);
 

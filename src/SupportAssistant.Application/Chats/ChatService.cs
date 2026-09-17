@@ -5,7 +5,7 @@ public class ChatService(IAnswerGenerator answerGenerator) : IChatService
     protected virtual IAnswerGenerator  AnswerGenerator { get; }
         = answerGenerator ??  throw new ArgumentNullException(nameof(answerGenerator));
 
-    public async Task<ChatResult> Handleasync(ChatCommand command, CancellationToken cancellationToken = default)
+    public async Task<ChatResult> HandleAsync(ChatCommand command, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(command.Question);
 

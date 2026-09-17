@@ -2,5 +2,5 @@
 
 public interface IChatService
 {
-    Task<ChatResult> Handleasync(ChatCommand command, CancellationToken cancellationToken = default);
+    Task<ChatResult> HandleAsync(ChatCommand command, CancellationToken cancellationToken = default);
 }
