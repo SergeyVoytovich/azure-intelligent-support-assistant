@@ -1,10 +1,11 @@
 using Azure.Monitor.OpenTelemetry.Exporter;
-using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Azure.Functions.Worker.OpenTelemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OpenTelemetry;
+using SupportAssistant.Api.Mapping;
+using SupportAssistant.Application.Chats;
+using SupportAssistant.Infrastructure.Chats;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
@@ -16,5 +17,9 @@ if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPLICATIONINSIGHT
         .UseFunctionsWorkerDefaults()
         .UseAzureMonitorExporter();
 }
+
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IAnswerGenerator, StubAnswerGenerator>();
+builder.Services.AddAutoMapper(cnf => cnf.AddProfile<DtoProfile>());
 
 builder.Build().Run();

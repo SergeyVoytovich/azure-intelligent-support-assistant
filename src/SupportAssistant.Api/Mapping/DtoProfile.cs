@@ -6,7 +6,7 @@ namespace SupportAssistant.Api.Mapping;
 
 public class DtoProfile : Profile
 {
-    protected DtoProfile()
+    public DtoProfile()
     {
         CreateMap<ChatResult, ChatResponse>()
             .ForMember(dst => dst.Answer, opt => opt.MapFrom(src => src.Answer))
