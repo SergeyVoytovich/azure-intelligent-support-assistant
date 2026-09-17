@@ -41,12 +41,12 @@ services:
       - azurite-data:/data
 
   wiremock:
-    image: wiremock/wiremock:2.13.2-2
+    image: wiremock/wiremock:3.13.2-2
     container_name: support-assistent-wiremock
     ports:
       - "8080:8080"
-    valume:
+    volumes:
       - ./docker/wiremock:/home/wiremock
 
-  volumes:
-    azurite-data:
+volumes:
+  azurite-data:
