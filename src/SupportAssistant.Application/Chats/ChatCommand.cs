@@ -1,6 +1,3 @@
 ﻿namespace SupportAssistant.Application.Chats;
 
-public class ChatCommand
-{
-    
-}
+public sealed record ChatCommand(string Question);

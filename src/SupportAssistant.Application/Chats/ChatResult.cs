@@ -1,6 +1,8 @@
 ﻿namespace SupportAssistant.Application.Chats;
 
-public class ChatResult
-{
-    
-}
+public sealed record ChatResult
+    (
+        string Answer,
+        IReadOnlyCollection<string> Sources,
+        bool EscalationRequired
+    );
