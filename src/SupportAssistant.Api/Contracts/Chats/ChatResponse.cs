@@ -1,7 +1,9 @@
 ﻿namespace SupportAssistant.Api.Contracts.Chats;
 
-public record ChatResponse(
-    string Answer,
-    IReadOnlyCollection<string> Sources,
-    bool EscalationRequired,
-    string RequestId);
+public record ChatResponse
+{
+    public string Answer { get; set; } = null!;
+    public IReadOnlyCollection<string> Sources { get; set; } = [];
+    public bool EscalationRequired { get; set; }
+    public string RequestId { get; set; } = null!;
+}
