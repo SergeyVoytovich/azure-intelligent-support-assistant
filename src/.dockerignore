@@ -21,5 +21,11 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
+
+TestResults/
+coverage/
+artifacts/
+
 LICENSE
 README.md
+local.settings.json
