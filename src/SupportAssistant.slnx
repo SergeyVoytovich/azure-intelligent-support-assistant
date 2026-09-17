@@ -1,5 +1,10 @@
 <Solution>
-  <Project Path="SupportAssistant.Api/SupportAssistant_Api.csproj" />
+  <Folder Name="/Tests/">
+    <Project Path="SupportAssistant.ArchitectureTests/SupportAssistant.ArchitectureTests.csproj" />
+    <Project Path="SupportAssistant.IntegrationTests/SupportAssistant.IntegrationTests.csproj" />
+    <Project Path="SupportAssistant.UnitTest/SupportAssistant.UnitTest.csproj" />
+  </Folder>
+  <Project Path="SupportAssistant.Api/SupportAssistant.Api.csproj" />
   <Project Path="SupportAssistant.Application/SupportAssistant.Application.csproj" />
   <Project Path="SupportAssistant.Domain/SupportAssistant.Domain.csproj" />
   <Project Path="SupportAssistant.Infrastructure/SupportAssistant.Infrastructure.csproj" />
