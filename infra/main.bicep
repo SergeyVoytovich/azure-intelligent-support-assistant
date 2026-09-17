@@ -7,6 +7,9 @@ param location string = 'germanywestcentral'
 @allowed(['dev', 'test', 'prod'])
 param environment string = 'dev'
 
+@description('Email address for Azure budget notifications.')
+param budgetContactEmail string
+
 var resourcerGroupName string = 'dev'
 var suffix  = uniqueString(subscription().id, resourcerGroupName)
 var prefix = 'isa'
@@ -43,6 +46,14 @@ module ai 'modules/ai.bicep' = {
     }
 }
 
+module budget 'modules/budget.bicep' = {
+    name: '${prefix}-ai-${environment}'
+    params: {
+        resourceGroup: rg.name
+        email: budgetContactEmail
+    }
+}
+
 output resourceGroupName string = rg.name
 
 output storageAccountName string = core.outputs.storageAccountName
@@ -54,3 +65,4 @@ output foundryEndpoint string = ai.outputs.foundryEndpoint
 output documentIntelligenceName string = ai.outputs.documentIntelligenceName
 // output languageName string = ai.outputs.languageName
 output languageEndpoint string = ai.outputs.langungeEndpoint
+output buddgetName string = budget.outputs.budgetName
