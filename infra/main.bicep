@@ -54,6 +54,21 @@ module budget 'modules/budget.bicep' = {
     }
 }
 
+module security 'modules/security.bicep' = {
+    name: '${prefix}-sec-${environment}'
+    scope: rg
+    params: {
+       location: location
+        environment: environment
+        prefix: prefix
+        suffix: suffix
+        storageAccount: core.outputs.storageAccountName
+        searchService: core.outputs.searchServiceName
+        foundryName: ai.outputs.foundryName
+        documentsName: ai.outputs.documentIntelligenceName
+    }
+}
+
 output resourceGroupName string = rg.name
 
 output storageAccountName string = core.outputs.storageAccountName
@@ -66,3 +81,5 @@ output documentIntelligenceName string = ai.outputs.documentIntelligenceName
 // output languageName string = ai.outputs.languageName
 output languageEndpoint string = ai.outputs.langungeEndpoint
 output buddgetName string = budget.outputs.budgetName
+output runtimeIdentityName string = security.outputs.identityName
+output runtimeIdentityClientId string = security.outputs.identityClientId
