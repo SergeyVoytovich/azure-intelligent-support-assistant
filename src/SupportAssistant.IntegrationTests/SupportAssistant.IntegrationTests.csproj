@@ -18,4 +18,9 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\SupportAssistant.Api\SupportAssistant.Api.csproj" />
+      <ProjectReference Include="..\SupportAssistant.Infrastructure\SupportAssistant.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>
