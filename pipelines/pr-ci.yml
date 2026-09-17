@@ -7,8 +7,8 @@ trigger:
 pr:
   autoCancel: true
   branches: include:
-    - develop
-      - main
+    - dev
+    - main
 
 pool:
   vmImage: ubuntu-latest
