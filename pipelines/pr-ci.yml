@@ -1,0 +1,33 @@
+trigger:
+  branches:
+    include:
+      - develop
+      - main
+
+pr:
+  autoCancel: true
+  branches: include:
+    - develop
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  buildConfiguration: Release
+
+steps:
+  - task: UseDotNet@2
+    displayName: Use net 10
+    inputs:
+      packageType: sdk
+      version: 10.0.x
+      
+  - script: dotnet restore src/SupportAssistant.slnx
+    displayName: Restore
+
+  - script: dotnet build src/SupportAssistant.slnx --configuration $(buildConfiguration)
+    displayName: Build
+
+  - script: dotnet test src/SupportAssistant.slnx --configuration $(buildConfiguration)
+    displayName: test
