@@ -1,0 +1,52 @@
+services:
+  
+  api:
+    build:
+      context: /src
+      dockerfile: SupportAssistant.Api/Dockerfile
+    environment:
+      FUNCTIONS_WORKER_RUNTIME: dotnet-isolated
+      AzureWebJobsStorage: >- 
+        DefaultEndpointsProtocol=https;
+        AccountName=devstoreaccount1;
+        AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;
+        BlobEndpoint=http://azurite:10000/devstoreaccount1;
+        QueueEndpoint=http://azurite:10001/devstoreaccount1;
+        TableEndpoint=http://azurite:10002/devstoreaccount1;
+    ports:
+      - "7071:80"
+    depends_on:
+      - azurite
+      - wiremock
+
+  azurite:
+  
+    image: mcr.microsoft.com/azure-storage/azurite:3.37.0
+    container_name: support-assistent-azurite
+    command:
+      - azurite
+      - --blobHost
+      - 0.0.0.0
+      - --queueHost
+      - 0.0.0.0
+      - --tableHost
+      - 0.0.0.0
+      - --location
+      - /data
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - azurite-data:/data
+
+  wiremock:
+    image: wiremock/wiremock:2.13.2-2
+    container_name: support-assistent-wiremock
+    ports:
+      - "8080:8080"
+    valume:
+      - ./docker/wiremock:/home/wiremock
+
+  volumes:
+    azurite-data:
