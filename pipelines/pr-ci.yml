@@ -6,9 +6,10 @@ trigger:
 
 pr:
   autoCancel: true
-  branches: include:
-    - dev
-    - main
+  branches: 
+    include:
+      - dev
+      - main
 
 pool:
   vmImage: ubuntu-latest
