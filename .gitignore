@@ -132,4 +132,15 @@ Desktop.ini
 *.swp
 *~
 
+# ---------------------------------------------------------
+# Azure / Publish
+# ---------------------------------------------------------
 
+*.azurePubxml
+*.publishsettings
+*.pubxml
+PublishScripts/
+
+
+# JetBrains user-specific settings
+*.DotSettings.user
