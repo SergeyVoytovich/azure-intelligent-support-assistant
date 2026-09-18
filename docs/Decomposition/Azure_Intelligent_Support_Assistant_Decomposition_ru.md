@@ -30,8 +30,8 @@
 * ~~**2.1** Подготовить тестовую fictional company и Knowledge Base~~
 * ~~**2.2** Создать Blob Storage ingestion flow~~
 * ~~**2.3** Интегрировать Document Intelligence~~
-* **2.4** Реализовать и протестировать chunking
-* **2.5** Развернуть embedding model
+* ~~**2.4** Реализовать и протестировать chunking~~
+* ~~**2.5** Развернуть embedding model~~
 * **2.6** Создать AI Search index
 * **2.7** Настроить vector/HNSW search
 * **2.8** Добавить hybrid search
