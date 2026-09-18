@@ -3,7 +3,9 @@ using Azure.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using SupportAssistant.Application.Chats;
 using SupportAssistant.Application.Documents;
+using SupportAssistant.Application.Knowledge;
 using SupportAssistant.Infrastructure.Chats;
+using SupportAssistant.Infrastructure.Knowledge;
 
 namespace SupportAssistant.Infrastructure.DependencyInjection;
 
@@ -15,6 +17,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IDocumentAnalyzer, IDocumentAnalyzer>()
             .AddScoped<IChatService, ChatService>()
             .AddScoped<IAnswerGenerator, StubAnswerGenerator>()
+            .AddSingleton<ITextChunker, TextChunker>()
         ;
 }
 

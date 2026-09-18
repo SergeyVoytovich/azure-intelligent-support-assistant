@@ -1,4 +1,4 @@
-﻿namespace SupportAssistant.Application.Knowladge;
+﻿namespace SupportAssistant.Application.Knowledge;
 
 public interface ITextChunker
 {
