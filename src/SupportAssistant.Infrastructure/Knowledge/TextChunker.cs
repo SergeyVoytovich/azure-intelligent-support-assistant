@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using SupportAssistant.Application.Knowledge;
+﻿using SupportAssistant.Application.Knowledge;
 
 namespace SupportAssistant.Infrastructure.Knowledge;
 

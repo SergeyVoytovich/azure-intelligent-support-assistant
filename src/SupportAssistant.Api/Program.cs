@@ -5,8 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SupportAssistant.Api.Mapping;
 using SupportAssistant.Api.System;
-using SupportAssistant.Application.Chats;
-using SupportAssistant.Infrastructure.Chats;
 using SupportAssistant.Infrastructure.DependencyInjection;
 
 var builder = FunctionsApplication.CreateBuilder(args);
@@ -20,7 +18,7 @@ if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPLICATIONINSIGHT
         .UseAzureMonitorExporter();
 }
 
-builder.Services.AddInfrastructure(EnvironmentVariables.DocumentIntelligenceEndpoint);
+builder.Services.AddInfrastructure(EnvironmentVariables.InfrastrubtireConfiguration);
 
 builder.Services.AddAutoMapper(cnf => cnf.AddProfile<DtoProfile>());
 
