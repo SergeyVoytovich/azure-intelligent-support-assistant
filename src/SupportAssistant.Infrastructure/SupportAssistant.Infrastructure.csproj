@@ -11,4 +11,9 @@
       <ProjectReference Include="..\SupportAssistant.Domain\SupportAssistant.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Azure.AI.DocumentIntelligence" />
+      <PackageReference Include="Azure.Identity" />
+    </ItemGroup>
+
 </Project>
