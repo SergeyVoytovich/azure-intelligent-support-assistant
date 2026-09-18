@@ -1,7 +1,9 @@
-﻿using SupportAssistant.Application.Chats;
+﻿using System.Diagnostics.CodeAnalysis;
+using SupportAssistant.Application.Chats;
 
 namespace SupportAssistant.UnitTests.Chats;
 
+[SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores")]
 public sealed class ChatServiceTests
 {
     [Fact]

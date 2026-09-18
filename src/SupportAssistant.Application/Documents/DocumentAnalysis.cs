@@ -2,6 +2,6 @@
 
 public record DocumentAnalysis
 {
-    public string Contenst { get; set; } = null!;
+    public string Content { get; set; } = null!;
     public int PageCount { get; set; }
 }
