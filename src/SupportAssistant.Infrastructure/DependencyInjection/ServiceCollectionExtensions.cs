@@ -1,5 +1,6 @@
 ﻿using Azure.AI.DocumentIntelligence;
 using Azure.Identity;
+using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Microsoft.Extensions.DependencyInjection;
 using SupportAssistant.Application.Chats;
@@ -22,6 +23,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ITextChunker, TextChunker>()
             .AddSingleton(new SearchIndexClient(new Uri(configuration.SearchEndpoint), new DefaultAzureCredential()))
             .AddSingleton<SearchIndexInitializer>()
+            .AddSingleton(new SearchClient(new Uri(configuration.SearchEndpoint), SearchIndexDefinition.IndexName,  new DefaultAzureCredential()))
         ;
 }
 
