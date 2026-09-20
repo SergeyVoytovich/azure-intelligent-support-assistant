@@ -10,6 +10,7 @@ using SupportAssistant.Application.Documents;
 using SupportAssistant.Application.Embeddings;
 using SupportAssistant.Application.Knowledge;
 using SupportAssistant.Infrastructure.Chats;
+using SupportAssistant.Infrastructure.Documents;
 using SupportAssistant.Infrastructure.Embeddings;
 using SupportAssistant.Infrastructure.Ingestion;
 using SupportAssistant.Infrastructure.Knowledge;
@@ -22,10 +23,10 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, InfrastrubtireConfiguration config)
         => services
             .AddSingleton(new DocumentIntelligenceClient(new Uri(config.DocumentsEndpoint), new DefaultAzureCredential()))
-            .AddSingleton<IDocumentAnalyzer, IDocumentAnalyzer>()
+            .AddSingleton<IDocumentAnalyzer, AzureDocumentAnalyzer>()
             .AddScoped<IChatService, ChatService>()
             .AddScoped<IAnswerGenerator, StubAnswerGenerator>()
-            .AddSingleton<ITextChunker, TextChunker>()
+            .AddSingleton<ITextChunker>(TextChunker.Default())
             .AddSingleton(new SearchIndexClient(new Uri(config.SearchEndpoint), new DefaultAzureCredential()))
             .AddSingleton<SearchIndexInitializer>()
             .AddSingleton(new SearchClient(new Uri(config.SearchEndpoint), SearchIndexDefinition.IndexName,  new DefaultAzureCredential()))
@@ -35,8 +36,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton(new BlobServiceClient(new Uri(config.BoobServiceEndpoint), new DefaultAzureCredential())
                                 .GetBlobContainerClient(config.ContainerName))
             .AddSingleton<KnowledgeIngestionService>()
+            .AddSingleton<SearchDocumentIndexer>()
         ;
-
 }
 
 

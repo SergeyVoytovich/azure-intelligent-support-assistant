@@ -21,15 +21,7 @@ if (EnvironmentVariables.IsApplicationinsightsConnected)
 }
 
 
-builder.Services.AddInfrastructure(new InfrastrubtireConfiguration
-                                   {
-                                       SearchEndpoint = builder.Configuration.GetAzureSearchEndpoint(),
-                                       DocumentsEndpoint = EnvironmentVariables.GetDocumentintelligenceendpoint,
-                                       EmbeddingDeployment = builder.Configuration.GetEmbeddingDeplyment(),
-                                       FoundryEndpoint = builder.Configuration.GetFoundryEndpoint(),
-                                       ContainerName = builder.Configuration.GetContainerName(),
-                                       StorageAccountName = builder.Configuration.GetStorageAccountName()
-                                   });
+builder.Services.AddInfrastructure(builder.Configuration.GetInfrastructureConfiguration());
 
 builder.Services.AddAutoMapper(cnf => cnf.AddProfile<DtoProfile>());
 

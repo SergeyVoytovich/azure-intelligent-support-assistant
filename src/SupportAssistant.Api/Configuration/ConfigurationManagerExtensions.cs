@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using SupportAssistant.Infrastructure.DependencyInjection;
 
 namespace SupportAssistant.Api.Configuration;
 
@@ -21,4 +22,19 @@ public static class ConfigurationManagerExtensions
 
     public static string GetContainerName(this IConfigurationManager config)
         => config.GetRequired("Storage:KnowledgeContainer");
+
+    public static string GetDocumentIntelligenceEndpoint(this ConfigurationManager config)
+        => config.GetRequired("DocumentIntelligence:Endpoint");
+
+
+    public static InfrastrubtireConfiguration GetInfrastructureConfiguration(this ConfigurationManager config)
+        => new()
+        {
+            SearchEndpoint = config.GetAzureSearchEndpoint(),
+            DocumentsEndpoint = config.GetDocumentIntelligenceEndpoint(),
+            EmbeddingDeployment = config.GetEmbeddingDeplyment(),
+            FoundryEndpoint = config.GetFoundryEndpoint(),
+            ContainerName = config.GetContainerName(),
+            StorageAccountName = config.GetStorageAccountName()
+        };
 }

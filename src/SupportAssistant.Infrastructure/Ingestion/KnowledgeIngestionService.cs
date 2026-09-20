@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Microsoft.Extensions.Logging;
 using SupportAssistant.Application.Documents;
 using SupportAssistant.Application.Knowledge;
 using SupportAssistant.Infrastructure.Search;
@@ -10,27 +11,43 @@ public class KnowledgeIngestionService(
     BlobContainerClient blobContainerClient,
     IDocumentAnalyzer documentAnalyzer,
     ITextChunker textChunker,
-    SearchDocumentIndexer documentIndexer)
+    SearchDocumentIndexer documentIndexer,
+    SearchIndexInitializer indexInitializer,
+    ILogger<SearchDocumentIndexer> logger)
 {
     protected virtual BlobContainerClient BlobContainerClient { get; } = blobContainerClient;
     protected virtual IDocumentAnalyzer DocumentAnalyzer { get; } = documentAnalyzer;
     protected virtual ITextChunker TextChunker { get; } = textChunker;
     protected virtual SearchDocumentIndexer DocumentIndexer { get; } = documentIndexer;
+    protected virtual SearchIndexInitializer IndexInitializer { get; } = indexInitializer;
+    protected ILogger<SearchDocumentIndexer> Logger { get; } = logger;
 
-
-    public async Task RunAsync(CancellationToken cancellationToken = default)
+    public async Task<IngestionResult> RunAsync(CancellationToken cancellationToken = default)
     {
+        await IndexInitializer.EnsureCreatedAsync(cancellationToken);
+
+        var blobCount = 0;
+        var pdfCount = 0;
+        var chunkCount = 0;
+        var blobNames = new List<string>();
+
         await foreach (var blobItem in BlobContainerClient.GetBlobsAsync(cancellationToken: cancellationToken))
         {
-            await RunAsync(blobItem, cancellationToken);
+            var result = await RunAsync(blobItem, cancellationToken);
+            blobCount += result.BlobCount;
+            pdfCount += result.PdfCount;
+            chunkCount += result.ChunkCount;
+            blobNames.Add(result.BlobNames.Single());
         }
+
+        return new IngestionResult(blobCount, pdfCount, chunkCount, blobNames);
     }
 
-    protected virtual async Task RunAsync(BlobItem blobItem, CancellationToken cancellationToken = default)
+    protected virtual async Task<IngestionResult> RunAsync(BlobItem blobItem, CancellationToken cancellationToken = default)
     {
-        if (!blobItem.Name.EndsWith(".pfd", StringComparison.OrdinalIgnoreCase))
+        if (!blobItem.Name.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
         {
-            return;
+            return new IngestionResult(1, 0, 0, [blobItem.Name]);
         }
 
         var blobClient = BlobContainerClient.GetBlobClient(blobItem.Name);
@@ -41,6 +58,15 @@ public class KnowledgeIngestionService(
 
         var chunks = TextChunker.Chunk(analysis.Content, blobItem.Name);
 
+        Console.WriteLine($"Blob {blobItem.Name}: {analysis.Content.Length} chars, {chunks.Count} chunks.");
+        Logger.LogWarning(
+            $"Blob {blobItem.Name}: extracted {analysis.Content.Length} chars, created {chunks.Count} chunks.",
+            blobItem.Name,
+            analysis.Content.Length,
+            chunks.Count);
+
         await DocumentIndexer.IndexAsync(chunks, cancellationToken);
+
+        return new IngestionResult(1, 1, chunks.Count, [blobItem.Name]);
     }
 }
