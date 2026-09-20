@@ -8,10 +8,13 @@ public static class EnvironmentVariables
         => Environment.GetEnvironmentVariable(name)
            ?? throw new InvalidOperationException($"'{name}' is not configured.");
 
-    public static InfrastrubtireConfiguration InfrastrubtireConfiguration
-        => new()
-        {
-            DocumentsEndpoint = GetEnvironmentVariableRequired("DOCUMENT_INTELLIGENCE_ENDPOINT"),
-            SearchEndpoint = GetEnvironmentVariableRequired("AZURE_SEARCH_ENDPOINT")
-        };
+    public static string? ApplicationinsightsConnectionString
+        => Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
+
+    public static bool IsApplicationinsightsConnected
+        => !string.IsNullOrWhiteSpace(ApplicationinsightsConnectionString);
+
+    public static string GetDocumentintelligenceendpoint
+        => GetEnvironmentVariableRequired("DOCUMENT_INTELLIGENCE_ENDPOINT");
+
 }

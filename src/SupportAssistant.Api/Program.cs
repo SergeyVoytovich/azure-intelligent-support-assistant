@@ -3,6 +3,7 @@ using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Azure.Functions.Worker.OpenTelemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SupportAssistant.Api.Configuration;
 using SupportAssistant.Api.Mapping;
 using SupportAssistant.Api.System;
 using SupportAssistant.Infrastructure.DependencyInjection;
@@ -11,14 +12,20 @@ var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.ConfigureFunctionsWebApplication();
 
-if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING")))
+if (EnvironmentVariables.IsApplicationinsightsConnected)
 {
-    builder.Services.AddOpenTelemetry()
+    builder.Services
+        .AddOpenTelemetry()
         .UseFunctionsWorkerDefaults()
         .UseAzureMonitorExporter();
 }
 
-builder.Services.AddInfrastructure(EnvironmentVariables.InfrastrubtireConfiguration);
+
+builder.Services.AddInfrastructure(new InfrastrubtireConfiguration
+                                   {
+                                       SearchEndpoint = builder.Configuration.GetAzureSearchEndpoint(),
+                                       DocumentsEndpoint = EnvironmentVariables.GetDocumentintelligenceendpoint
+                                   });
 
 builder.Services.AddAutoMapper(cnf => cnf.AddProfile<DtoProfile>());
 

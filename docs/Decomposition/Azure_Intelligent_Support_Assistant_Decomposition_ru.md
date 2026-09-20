@@ -32,7 +32,7 @@
 * ~~**2.3** Интегрировать Document Intelligence~~
 * ~~**2.4** Реализовать и протестировать chunking~~
 * ~~**2.5** Развернуть embedding model~~
-* **2.6** Создать AI Search index
+* ~~**2.6** Создать AI Search index~~
 * **2.7** Настроить vector/HNSW search
 * **2.8** Добавить hybrid search
 * **2.9** Добавить semantic ranking
