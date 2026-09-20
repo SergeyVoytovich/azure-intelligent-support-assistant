@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using SupportAssistant.Api.Configuration;
 using SupportAssistant.Api.Mapping;
 using SupportAssistant.Api.System;
+using SupportAssistant.Application.DependencyInjection;
 using SupportAssistant.Infrastructure.DependencyInjection;
 
 var builder = FunctionsApplication.CreateBuilder(args);
@@ -21,7 +22,9 @@ if (EnvironmentVariables.IsApplicationinsightsConnected)
 }
 
 
-builder.Services.AddInfrastructure(builder.Configuration.GetInfrastructureConfiguration());
+builder.Services
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration.GetInfrastructureConfiguration());
 
 builder.Services.AddAutoMapper(cnf => cnf.AddProfile<DtoProfile>());
 
