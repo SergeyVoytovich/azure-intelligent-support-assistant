@@ -3,6 +3,7 @@ using Azure.AI.OpenAI;
 using Azure.Identity;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
+using Azure.Storage.Blobs;
 using Microsoft.Extensions.DependencyInjection;
 using SupportAssistant.Application.Chats;
 using SupportAssistant.Application.Documents;
@@ -10,6 +11,7 @@ using SupportAssistant.Application.Embeddings;
 using SupportAssistant.Application.Knowledge;
 using SupportAssistant.Infrastructure.Chats;
 using SupportAssistant.Infrastructure.Embeddings;
+using SupportAssistant.Infrastructure.Ingestion;
 using SupportAssistant.Infrastructure.Knowledge;
 using SupportAssistant.Infrastructure.Search;
 
@@ -17,19 +19,22 @@ namespace SupportAssistant.Infrastructure.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, InfrastrubtireConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, InfrastrubtireConfiguration config)
         => services
-            .AddSingleton(new DocumentIntelligenceClient(new Uri(configuration.DocumentsEndpoint), new DefaultAzureCredential()))
+            .AddSingleton(new DocumentIntelligenceClient(new Uri(config.DocumentsEndpoint), new DefaultAzureCredential()))
             .AddSingleton<IDocumentAnalyzer, IDocumentAnalyzer>()
             .AddScoped<IChatService, ChatService>()
             .AddScoped<IAnswerGenerator, StubAnswerGenerator>()
             .AddSingleton<ITextChunker, TextChunker>()
-            .AddSingleton(new SearchIndexClient(new Uri(configuration.SearchEndpoint), new DefaultAzureCredential()))
+            .AddSingleton(new SearchIndexClient(new Uri(config.SearchEndpoint), new DefaultAzureCredential()))
             .AddSingleton<SearchIndexInitializer>()
-            .AddSingleton(new SearchClient(new Uri(configuration.SearchEndpoint), SearchIndexDefinition.IndexName,  new DefaultAzureCredential()))
-            .AddSingleton(new AzureOpenAIClient(new Uri(configuration.FoundryEndpoint), new DefaultAzureCredential())
-                                .GetEmbeddingClient(configuration.EmbeddingDeployment))
+            .AddSingleton(new SearchClient(new Uri(config.SearchEndpoint), SearchIndexDefinition.IndexName,  new DefaultAzureCredential()))
+            .AddSingleton(new AzureOpenAIClient(new Uri(config.FoundryEndpoint), new DefaultAzureCredential())
+                                .GetEmbeddingClient(config.EmbeddingDeployment))
             .AddSingleton<IEmbeddingGenerator, AzureOpenAiEmbeddingGenerator>()
+            .AddSingleton(new BlobServiceClient(new Uri(config.BoobServiceEndpoint), new DefaultAzureCredential())
+                                .GetBlobContainerClient(config.ContainerName))
+            .AddSingleton<KnowledgeIngestionService>()
         ;
 
 }

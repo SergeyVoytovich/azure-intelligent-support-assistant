@@ -26,7 +26,9 @@ builder.Services.AddInfrastructure(new InfrastrubtireConfiguration
                                        SearchEndpoint = builder.Configuration.GetAzureSearchEndpoint(),
                                        DocumentsEndpoint = EnvironmentVariables.GetDocumentintelligenceendpoint,
                                        EmbeddingDeployment = builder.Configuration.GetEmbeddingDeplyment(),
-                                       FoundryEndpoint = builder.Configuration.GetFoundryEndpoint()
+                                       FoundryEndpoint = builder.Configuration.GetFoundryEndpoint(),
+                                       ContainerName = builder.Configuration.GetContainerName(),
+                                       StorageAccountName = builder.Configuration.GetStorageAccountName()
                                    });
 
 builder.Services.AddAutoMapper(cnf => cnf.AddProfile<DtoProfile>());
