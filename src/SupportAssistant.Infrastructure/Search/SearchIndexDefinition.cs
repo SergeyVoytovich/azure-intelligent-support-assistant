@@ -17,6 +17,8 @@ public static class SearchIndexDefinition
 
     public const int EmbeddingDimensions = 1536;
 
+    public const string SemanticConfigurationName = "semantic-config";
+
     private static IEnumerable<SearchField> GetFields()
     {
         yield return new SearchField(IdField, SearchFieldDataType.String)

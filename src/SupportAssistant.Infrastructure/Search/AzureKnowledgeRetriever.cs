@@ -44,21 +44,9 @@ public class AzureKnowledgeRetriever(SearchClient searchClient, IEmbeddingGenera
          var options = new SearchOptions
          {
              Size = top,
-             VectorSearch = new VectorSearchOptions
-             {
-                 Queries =
-                 {
-                     new VectorizedQuery(
-                         queryVector.ToArray())
-                     {
-                         KNearestNeighborsCount = top,
-                         Fields =
-                         {
-                             SearchIndexDefinition.ContentVectorField
-                         }
-                     }
-                 }
-             }
+             QueryType = SearchQueryType.Semantic,
+             SemanticSearch = GetSemanticSearchOptions(),
+             VectorSearch = GetVectorSearchOptions(queryVector, top)
          };
 
          options.Select.Add(SearchIndexDefinition.ContentField);
@@ -67,4 +55,27 @@ public class AzureKnowledgeRetriever(SearchClient searchClient, IEmbeddingGenera
 
          return options;
     }
+
+    protected virtual SemanticSearchOptions GetSemanticSearchOptions()
+        => new()
+        {
+            SemanticConfigurationName =
+                SearchIndexDefinition.SemanticConfigurationName
+        };
+
+    protected virtual VectorSearchOptions GetVectorSearchOptions(IReadOnlyList<float> queryVector, int top)
+        => new()
+        {
+            Queries =
+            {
+                new VectorizedQuery(queryVector.ToArray())
+                {
+                    KNearestNeighborsCount = top,
+                    Fields =
+                    {
+                        SearchIndexDefinition.ContentVectorField
+                    }
+                }
+            }
+        };
 }

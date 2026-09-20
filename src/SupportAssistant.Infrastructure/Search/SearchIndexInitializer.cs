@@ -12,11 +12,35 @@ public class SearchIndexInitializer(SearchIndexClient client)
     {
         var index = new SearchIndex(SearchIndexDefinition.IndexName, SearchIndexDefinition.Fields)
         {
-            VectorSearch = new VectorSearch()
+            VectorSearch = new VectorSearch(),
+            SemanticSearch =  GetSemantic()
         };
         index.VectorSearch.Algorithms.Add(new HnswAlgorithmConfiguration("hnsw-config"));
         index.VectorSearch.Profiles.Add(new VectorSearchProfile("vector-profile", "hnsw-config"));
 
+        GetSemantic();
+
         await Client.CreateOrUpdateIndexAsync(index, cancellationToken: cancellationToken);
+    }
+
+    protected virtual SemanticSearch GetSemantic()
+    {
+        var semanticPrioritizedFields = new SemanticPrioritizedFields
+        {
+            ContentFields =
+            {
+                new SemanticField(SearchIndexDefinition.ContentField)
+            }
+        };
+        var semanticConfiguration = new SemanticConfiguration(SearchIndexDefinition.SemanticConfigurationName, semanticPrioritizedFields);
+
+        var semanticSearch = new SemanticSearch
+        {
+            DefaultConfigurationName =
+                SearchIndexDefinition.SemanticConfigurationName
+        };
+
+        semanticSearch.Configurations.Add(semanticConfiguration);
+        return semanticSearch;
     }
 }
