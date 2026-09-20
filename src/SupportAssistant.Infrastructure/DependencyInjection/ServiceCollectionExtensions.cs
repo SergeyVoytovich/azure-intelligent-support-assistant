@@ -1,12 +1,15 @@
 ﻿using Azure.AI.DocumentIntelligence;
+using Azure.AI.OpenAI;
 using Azure.Identity;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Microsoft.Extensions.DependencyInjection;
 using SupportAssistant.Application.Chats;
 using SupportAssistant.Application.Documents;
+using SupportAssistant.Application.Embeddings;
 using SupportAssistant.Application.Knowledge;
 using SupportAssistant.Infrastructure.Chats;
+using SupportAssistant.Infrastructure.Embeddings;
 using SupportAssistant.Infrastructure.Knowledge;
 using SupportAssistant.Infrastructure.Search;
 
@@ -24,7 +27,11 @@ public static class ServiceCollectionExtensions
             .AddSingleton(new SearchIndexClient(new Uri(configuration.SearchEndpoint), new DefaultAzureCredential()))
             .AddSingleton<SearchIndexInitializer>()
             .AddSingleton(new SearchClient(new Uri(configuration.SearchEndpoint), SearchIndexDefinition.IndexName,  new DefaultAzureCredential()))
+            .AddSingleton(new AzureOpenAIClient(new Uri(configuration.FoundryEndpoint), new DefaultAzureCredential())
+                                .GetEmbeddingClient(configuration.EmbeddingDeployment))
+            .AddSingleton<IEmbeddingGenerator, AzureOpenAiEmbeddingGenerator>()
         ;
+
 }
 
 

@@ -1,8 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
+using SupportAssistant.Application.Embeddings;
 using SupportAssistant.Application.Knowledge;
-using SupportAssistant.Application.Search;
 
 namespace SupportAssistant.Infrastructure.Search;
 

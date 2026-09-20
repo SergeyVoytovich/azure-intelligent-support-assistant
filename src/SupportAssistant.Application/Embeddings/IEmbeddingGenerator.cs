@@ -1,4 +1,4 @@
-﻿namespace SupportAssistant.Application.Search;
+﻿namespace SupportAssistant.Application.Embeddings;
 
 public interface IEmbeddingGenerator
 {
