@@ -20,13 +20,18 @@ public class AzureKnowledgeRetriever(SearchClient searchClient, IEmbeddingGenera
 
     protected virtual async Task<IReadOnlyCollection<KnowledgeSearchResult>> SearchAsync(string query, SearchOptions options, CancellationToken cancellationToken = default)
     {
-        var response = await Client.SearchAsync<SearchDocument>(query, options, cancellationToken);
+        var response = await Client.SearchAsync<SearchResultDocument>(query, options, cancellationToken);
 
         var results = new List<KnowledgeSearchResult>();
 
         await foreach (var result in response.Value.GetResultsAsync())
         {
-            results.Add(new KnowledgeSearchResult(result.Document.Content, result.Document.Source, result.Document.PageNumber, result.Score ?? 0));
+            results.Add(
+                new KnowledgeSearchResult(
+                    result.Document.Content ?? string.Empty,
+                    result.Document.Source ?? string.Empty,
+                    result.Document.PageNumber,
+                    result.Score ?? 0));
         }
 
         return results;
