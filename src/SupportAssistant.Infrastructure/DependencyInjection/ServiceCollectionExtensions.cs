@@ -37,6 +37,7 @@ public static class ServiceCollectionExtensions
                                 .GetBlobContainerClient(config.ContainerName))
             .AddSingleton<KnowledgeIngestionService>()
             .AddSingleton<SearchDocumentIndexer>()
+            .AddSingleton<IKnowledgeRetriever, AzureKnowledgeRetriever>()
         ;
 }
 
