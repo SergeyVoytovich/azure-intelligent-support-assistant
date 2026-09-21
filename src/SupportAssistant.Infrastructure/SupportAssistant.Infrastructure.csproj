@@ -19,6 +19,7 @@
       <PackageReference Include="Azure.Search.Documents" />
       <PackageReference Include="Azure.Storage.Blobs" />
       <PackageReference Include="OpenAI" />
+      <PackageReference Include="Azure.AI.TextAnalytics" />
     </ItemGroup>
 
 </Project>
