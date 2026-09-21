@@ -1,5 +1,4 @@
-﻿using OpenAI.Chat;
-using OpenAI.Responses;
+﻿using OpenAI.Responses;
 using SupportAssistant.Application.Chats;
 using SupportAssistant.Application.Knowledge;
 #pragma warning disable OPENAI001
@@ -31,9 +30,9 @@ public class AzureOpenAiAnswerGenerator(
                 cancellationToken);
 
         return new AnswerGenerationResult
-        {
-            Answer = response.Value.GetOutputText(),
-            Sources = knowledge.Select(x => x.Source).Distinct(StringComparer.OrdinalIgnoreCase).ToArray()
-        };
+        (
+            Answer: response.Value.GetOutputText(),
+            Sources: knowledge.Select(x => x.Source).Distinct(StringComparer.OrdinalIgnoreCase).ToArray()
+        );
     }
 }

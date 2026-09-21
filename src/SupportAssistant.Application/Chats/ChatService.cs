@@ -1,16 +1,29 @@
-﻿namespace SupportAssistant.Application.Chats;
+﻿using SupportAssistant.Application.Escalation;
+using SupportAssistant.Application.Language;
 
-public class ChatService(IAnswerGenerator answerGenerator) : IChatService
+namespace SupportAssistant.Application.Chats;
+
+public  class ChatService
+    (IAnswerGenerator answerGenerator, ITextAnalyzer textAnalyzer, IEscalationPolicy escalationPolicy)
+    : IChatService
 {
-    protected virtual IAnswerGenerator  AnswerGenerator { get; }
-        = answerGenerator ??  throw new ArgumentNullException(nameof(answerGenerator));
+    protected virtual IEscalationPolicy Policy { get; } = escalationPolicy;
+    protected virtual  ITextAnalyzer TextAnalyzer { get; } = textAnalyzer;
+    protected virtual  IAnswerGenerator AnswerGenerator { get; } = answerGenerator;
 
     public async Task<ChatResult> HandleAsync(ChatCommand command, CancellationToken cancellationToken = default)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(command.Question);
+        ArgumentNullException.ThrowIfNull(command);
 
-        var answer = await AnswerGenerator.GenerateAsync(command.Question, cancellationToken);
+        var analysis = await TextAnalyzer.AnalyzeAsync(command.Question, cancellationToken);
 
-        return ChatResult.New(answer.Answer, answer.Sources, false);
+        var escalation = Policy.Evaluate(command.Question, analysis);
+
+        var generated = await AnswerGenerator.GenerateAsync(command.Question, cancellationToken);
+
+        return new ChatResult(
+            generated.Answer,
+            generated.Sources,
+            escalation.Required);
     }
 }

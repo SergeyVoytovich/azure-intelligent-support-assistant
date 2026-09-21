@@ -30,6 +30,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, InfrastructureConfiguration config)
         => services
             .AddDocumentIntelligenceClient(config)
+            .AddSingleton<ITextAnalyzer, AzureTextAnalyzer>()
             .AddSingleton<IDocumentAnalyzer, AzureDocumentAnalyzer>()
             .AddScoped<IChatService, ChatService>()
             .AddAnswerGenerator(config)
@@ -110,9 +111,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddTextAnalyticsSlient(this IServiceCollection services, InfrastructureConfiguration config)
         => services.AddSingleton(
                 new TextAnalyticsClient(
-                    GetRequiredUri(
-                        config.LanguageEndpoint,
-                        nameof(config.LanguageEndpoint)),
+                    GetRequiredUri(config.LanguageEndpoint, nameof(config.LanguageEndpoint)),
                     new DefaultAzureCredential()))
             .AddSingleton<ITextAnalyzer, AzureTextAnalyzer>();
 }
