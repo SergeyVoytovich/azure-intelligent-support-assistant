@@ -3,6 +3,7 @@
 using System.ClientModel.Primitives;
 using Azure.AI.DocumentIntelligence;
 using Azure.AI.OpenAI;
+using Azure.AI.TextAnalytics;
 using Azure.Identity;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
@@ -13,11 +14,13 @@ using SupportAssistant.Application.Chats;
 using SupportAssistant.Application.Documents;
 using SupportAssistant.Application.Embeddings;
 using SupportAssistant.Application.Knowledge;
+using SupportAssistant.Application.Language;
 using SupportAssistant.Infrastructure.Chats;
 using SupportAssistant.Infrastructure.Documents;
 using SupportAssistant.Infrastructure.Embeddings;
 using SupportAssistant.Infrastructure.Ingestion;
 using SupportAssistant.Infrastructure.Knowledge;
+using SupportAssistant.Infrastructure.Language;
 using SupportAssistant.Infrastructure.Search;
 
 namespace SupportAssistant.Infrastructure.DependencyInjection;
@@ -40,7 +43,9 @@ public static class ServiceCollectionExtensions
             .AddBlobServiceClient(config)
             .AddSingleton<KnowledgeIngestionService>()
             .AddSingleton<SearchDocumentIndexer>()
-            .AddSingleton<IKnowledgeRetriever, AzureKnowledgeRetriever>();
+            .AddSingleton<IKnowledgeRetriever, AzureKnowledgeRetriever>()
+            .AddTextAnalyticsSlient(config)
+        ;
 
     private static IServiceCollection AddAnswerGenerator(this IServiceCollection services, InfrastructureConfiguration config)
         => services.AddScoped<IAnswerGenerator>(p => new AzureOpenAiAnswerGenerator(
@@ -101,4 +106,13 @@ public static class ServiceCollectionExtensions
         => !Uri.TryCreate(value, UriKind.Absolute, out var uri)
             ? throw new InvalidOperationException($"Configuration '{name}' contains invalid URI: '{value ?? "<null>"}'")
             : uri;
+
+    private static IServiceCollection AddTextAnalyticsSlient(this IServiceCollection services, InfrastructureConfiguration config)
+        => services.AddSingleton(
+                new TextAnalyticsClient(
+                    GetRequiredUri(
+                        config.LanguageEndpoint,
+                        nameof(config.LanguageEndpoint)),
+                    new DefaultAzureCredential()))
+            .AddSingleton<ITextAnalyzer, AzureTextAnalyzer>();
 }

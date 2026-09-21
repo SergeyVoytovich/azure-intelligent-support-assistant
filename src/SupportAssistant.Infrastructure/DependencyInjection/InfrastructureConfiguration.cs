@@ -2,15 +2,16 @@
 
 public record InfrastructureConfiguration
 {
-    public string DocumentsEndpoint { get; set; } = null!;
-    public string SearchEndpoint { get; set; } = null!;
-    public string FoundryEndpoint { get; set; } = null!;
-    public string FoundryChatDeployment { get; set; } = null!;
-    public string FoundryResponsesEndpoint { get; set; } = null!;
-    public string EmbeddingDeployment { get; set; } = null!;
-    public string StorageAccountName { get; set; } = null!;
-    public string ContainerName { get; set; } = null!;
+    public required string DocumentsEndpoint { get; init; }
+    public required string SearchEndpoint { get; init; }
+    public required string FoundryEndpoint { get; init; }
+    public required string FoundryChatDeployment { get; init; }
+    public required string FoundryResponsesEndpoint { get; init; }
+    public required string EmbeddingDeployment { get; init; }
+    public required string StorageAccountName { get; init; }
+    public required string ContainerName { get; init; }
     public string BlobServiceEndpoint => $"https://{StorageAccountName}.blob.core.windows.net";
+    public required string LanguageEndpoint { get; init; }
 
 
     public override string ToString()
@@ -22,5 +23,6 @@ public record InfrastructureConfiguration
            $"{nameof(EmbeddingDeployment)}: {EmbeddingDeployment}\r\n" +
            $"{nameof(StorageAccountName)}: {StorageAccountName}\r\n" +
            $"{nameof(ContainerName)}: {ContainerName}\r\n" +
-           $"{nameof(BlobServiceEndpoint)}: {BlobServiceEndpoint}\r\n";
+           $"{nameof(BlobServiceEndpoint)}: {BlobServiceEndpoint}\r\n" +
+           $"{nameof(LanguageEndpoint)}: {LanguageEndpoint}\r\n";
 }
