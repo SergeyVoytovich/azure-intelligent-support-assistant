@@ -33,11 +33,11 @@
 * ~~**2.4** Реализовать и протестировать chunking~~
 * ~~**2.5** Развернуть embedding model~~
 * ~~**2.6** Создать AI Search index~~
-* **2.7** Настроить vector/HNSW search
-* **2.8** Добавить hybrid search
-* **2.9** Добавить semantic ranking
-* **2.10** Реализовать `IKnowledgeRetriever`
-* **2.11** Реализовать Prompt Builder через TDD
+* ~~**2.7** Настроить vector/HNSW search~~
+* ~~**2.8** Добавить hybrid search~~
+* ~~**2.9** Добавить semantic ranking~~
+* ~~**2.10** Реализовать `IKnowledgeRetriever`~~
+* ~~**2.11** Реализовать Prompt Builder через TDD~~
 * **2.12** Интегрировать Azure OpenAI
 * **2.13** Реализовать grounded response + sources
 * **2.14** Интегрировать Azure AI Language
