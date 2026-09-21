@@ -19,6 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\SupportAssistant.Api\SupportAssistant.Api.csproj" />
       <ProjectReference Include="..\SupportAssistant.Application\SupportAssistant.Application.csproj" />
       <ProjectReference Include="..\SupportAssistant.Domain\SupportAssistant.Domain.csproj" />
       <ProjectReference Include="..\SupportAssistant.Infrastructure\SupportAssistant.Infrastructure.csproj" />
