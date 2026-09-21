@@ -43,8 +43,8 @@
 * ~~**2.14** Интегрировать Azure AI Language~~
 * ~~**2.15** Реализовать Escalation Policy~~
 * ~~**2.16** Укрепить `/api/chat`: validation, timeouts, ProblemDetails, correlation ID~~
-* **2.17** Добавить container integration tests
-* **2.18** Добавить реальные Azure integration tests
+* ~~**2.17** Добавить container integration tests~~
+* ~~**2.18** Добавить реальные Azure integration tests~~
 * **2.19** Довести coverage минимум до 70%
 
 ### Этап 3 — Vue и Continuous Delivery
