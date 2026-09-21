@@ -1,28 +1,40 @@
 services:
-  
   api:
     build:
-      context: /src
-      dockerfile: SupportAssistant.Api/Dockerfile
-    environment:
-      FUNCTIONS_WORKER_RUNTIME: dotnet-isolated
-      AzureWebJobsStorage: >- 
-        DefaultEndpointsProtocol=https;
-        AccountName=devstoreaccount1;
-        AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;
-        BlobEndpoint=http://azurite:10000/devstoreaccount1;
-        QueueEndpoint=http://azurite:10001/devstoreaccount1;
-        TableEndpoint=http://azurite:10002/devstoreaccount1;
+      context: .
+      dockerfile: src/SupportAssistant.Api/Dockerfile
+
     ports:
       - "7071:80"
+
+    environment:
+      FUNCTIONS_WORKER_RUNTIME: "dotnet-isolated"
+
+      AzureWebJobsStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1"
+
+      DocumentIntelligence__Endpoint: "https://doc-isa-dev-uxfdhanj.cognitiveservices.azure.com/"
+      AzureSearch__Endpoint: "https://search-isa-dev-uxfdhanj.search.windows.net"
+
+      Foundry__Endpoint: "https://ai-isa-dev-uxfdhanj.openai.azure.com/"
+      Foundry__EmbeddingDeployment: "text-embedding-3-small"
+      Foundry__ResponsesEndpoint: "https://ai-isa-dev-uxfdhanj.openai.azure.com/openai/v1/"
+      Foundry__ChatDeployment: "gpt-4o"
+
+      Language__Endpoint: "https://ai-isa-dev-uxfdhanj.cognitiveservices.azure.com/"
+
+      Storage__AccountName: "storageisadevuxfdhanj"
+      Storage__KnowledgeContainer: "knowledge-isa-dev-uxfdhanj"
+
+    env_file:
+      - .env
+
     depends_on:
       - azurite
-      - wiremock
 
   azurite:
-  
     image: mcr.microsoft.com/azure-storage/azurite:3.37.0
-    container_name: support-assistent-azurite
+    container_name: support-assistant-azurite
+
     command:
       - azurite
       - --blobHost
@@ -33,20 +45,35 @@ services:
       - 0.0.0.0
       - --location
       - /data
+
     ports:
       - "10000:10000"
       - "10001:10001"
       - "10002:10002"
+
     volumes:
       - azurite-data:/data
 
   wiremock:
     image: wiremock/wiremock:3.13.2-2
-    container_name: support-assistent-wiremock
+    container_name: support-assistant-wiremock
+
     ports:
       - "8080:8080"
+
     volumes:
       - ./docker/wiremock:/home/wiremock
+
+  web:
+    build:
+      context: ./src/SupportAssistant.Web
+      dockerfile: Dockerfile
+
+    ports:
+      - "8090:80"
+
+    depends_on:
+      - api
 
 volumes:
   azurite-data:

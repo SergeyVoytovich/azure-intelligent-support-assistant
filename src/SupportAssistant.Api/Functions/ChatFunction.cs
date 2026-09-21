@@ -10,14 +10,15 @@ using SupportAssistant.Application.Chats;
 
 namespace SupportAssistant.Api.Functions;
 
-public class ChatFunction(IChatService service, IMapper mapper)
+public class ChatFunction(IChatService service, IMapper mapper, ILogger<ChatFunction> logger)
 {
     protected virtual IChatService Service { get; } = service ?? throw new ArgumentNullException(nameof(service));
     protected virtual IMapper Mapper { get; } = mapper ?? throw new ArgumentNullException(nameof(mapper));
+    protected virtual ILogger<ChatFunction> Logger { get; } = logger;
 
     [Function("Chat")]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "chat")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "chat")]
         HttpRequest request,
         CancellationToken cancellationToken)
     {
@@ -76,8 +77,9 @@ public class ChatFunction(IChatService service, IMapper mapper)
         {
             return ObjectResultFactory.RequestCanceled(request);
         }
-        catch
+        catch (Exception ex)
         {
+            logger.LogError(ex, "Unexpected error while processing chat request.");
             return ObjectResultFactory.UnexpectedError(request);
         }
     }
