@@ -1,7 +1,7 @@
 import type { ChatRequest, ChatResponse } from '../models/chat'
 
 const apiBaseUrl =
-  import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:7071'
+  import.meta.env.VITE_API_BASE_URL ?? ''
 
 export async function sendChatMessage(
   request: ChatRequest

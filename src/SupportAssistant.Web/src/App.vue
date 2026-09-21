@@ -9,11 +9,7 @@ import ChatForm from './components/ChatForm.vue'
         <span class="eyebrow">SVoy Electronics</span>
 
         <h1>Support Assistant</h1>
-
-        <p>
-          Ask questions about warranty, shipping, payments,
-          returns and account security.
-        </p>
+        
       </header>
 
       <ChatForm />
