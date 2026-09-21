@@ -1,38 +1,38 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { sendChatMessage } from '../services/chatService'
-import type { ChatResponse } from '../models/chat'
+  import { ref } from 'vue'
+  import { sendChatMessage } from '../services/chatService'
+  import type { ChatResponse } from '../models/chat'
 
-const question = ref('')
-const result = ref<ChatResponse | null>(null)
-const error = ref<string | null>(null)
-const isLoading = ref(false)
+  const question = ref('')
+  const result = ref<ChatResponse | null>(null)
+  const error = ref<string | null>(null)
+  const isLoading = ref(false)
 
-async function submit(): Promise<void> {
-  const trimmedQuestion = question.value.trim()
+  async function submit(): Promise<void> {
+    const trimmedQuestion = question.value.trim()
 
-  if (!trimmedQuestion) {
-    error.value = 'Please enter a question.'
-    return
+    if (!trimmedQuestion) {
+      error.value = 'Please enter a question.'
+      return
+    }
+
+    isLoading.value = true
+    error.value = null
+    result.value = null
+
+    try {
+      result.value = await sendChatMessage({
+        question: trimmedQuestion
+      })
+    } catch (exception) {
+      error.value =
+        exception instanceof Error
+          ? exception.message
+          : 'Unexpected error.'
+    } finally {
+      isLoading.value = false
+    }
   }
-
-  isLoading.value = true
-  error.value = null
-  result.value = null
-
-  try {
-    result.value = await sendChatMessage({
-      question: trimmedQuestion
-    })
-  } catch (exception) {
-    error.value =
-      exception instanceof Error
-        ? exception.message
-        : 'Unexpected error.'
-  } finally {
-    isLoading.value = false
-  }
-}
 </script>
 
 <template>
