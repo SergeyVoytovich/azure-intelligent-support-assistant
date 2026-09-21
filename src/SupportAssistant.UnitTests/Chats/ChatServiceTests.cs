@@ -23,7 +23,7 @@ public sealed class ChatServiceTests
     {
         public Task<AnswerGenerationResult> GenerateAsync(string question, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(new AnswerGenerationResult{Answer = answer});
+            return Task.FromResult(new AnswerGenerationResult{Answer = answer, Sources = []});
         }
     }
 }
