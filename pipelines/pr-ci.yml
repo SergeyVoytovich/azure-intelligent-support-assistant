@@ -29,8 +29,20 @@ steps:
     inputs:
       versionSpec: 24.x
 
+  # -------------------------
+  # Restore dependencies
+  # -------------------------
+
   - script: dotnet restore src/SupportAssistant.slnx
     displayName: Restore .NET
+
+  - script: npm ci
+    displayName: Install frontend dependencies
+    workingDirectory: src/SupportAssistant.Web
+
+  # -------------------------
+  # Security scans
+  # -------------------------
 
   - script: |
       dotnet list src/SupportAssistant.slnx package --vulnerable --include-transitive
@@ -60,10 +72,18 @@ steps:
         /repo
     displayName: Trivy filesystem scan
 
+  # -------------------------
+  # Bicep validation
+  # -------------------------
+
   - script: |
       az bicep install
       az bicep build --file infra/main.bicep
     displayName: Validate Bicep
+
+  # -------------------------
+  # Backend build and tests
+  # -------------------------
 
   - script: >
       dotnet build
@@ -82,9 +102,9 @@ steps:
       --collect:"XPlat Code Coverage"
     displayName: Test .NET
 
-  - script: npm ci
-    displayName: Install frontend dependencies
-    workingDirectory: src/SupportAssistant.Web
+  # -------------------------
+  # Frontend build and tests
+  # -------------------------
 
   - script: npm run build
     displayName: Build frontend
@@ -93,6 +113,10 @@ steps:
   - script: npm test -- --run
     displayName: Test frontend
     workingDirectory: src/SupportAssistant.Web
+
+  # -------------------------
+  # Test reports
+  # -------------------------
 
   - task: PublishTestResults@2
     displayName: Publish .NET test results
@@ -107,3 +131,27 @@ steps:
     condition: succeededOrFailed()
     inputs:
       summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
+
+  # -------------------------
+  # Build artifacts
+  # -------------------------
+
+  - script: >
+      dotnet publish
+      src/SupportAssistant.Api/SupportAssistant.Api.csproj
+      --configuration $(buildConfiguration)
+      --output $(Build.ArtifactStagingDirectory)/api
+      --no-build
+    displayName: Publish backend
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish backend artifact
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)/api'
+      artifact: api
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish frontend artifact
+    inputs:
+      targetPath: 'src/SupportAssistant.Web/dist'
+      artifact: web
