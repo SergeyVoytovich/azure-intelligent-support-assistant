@@ -25,7 +25,7 @@
 * ~~**1.21** Настроить Service Connection через Workload Identity Federation~~
 * ~~**1.22** Настроить Managed Identity и первоначальный RBAC~~
 
-### Этап 2 — AI, RAG и backend
+### + Этап 2 — AI, RAG и backend
 
 * ~~**2.1** Подготовить тестовую fictional company и Knowledge Base~~
 * ~~**2.2** Создать Blob Storage ingestion flow~~
@@ -45,7 +45,7 @@
 * ~~**2.16** Укрепить `/api/chat`: validation, timeouts, ProblemDetails, correlation ID~~
 * ~~**2.17** Добавить container integration tests~~
 * ~~**2.18** Добавить реальные Azure integration tests~~
-* **2.19** Довести coverage минимум до 70%
+* ~~**2.19** Довести coverage минимум до 70%~~
 
 ### Этап 3 — Vue и Continuous Delivery
 
