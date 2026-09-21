@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+﻿using System.ClientModel;
+using AutoMapper;
+using Azure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using SupportAssistant.Api.Contracts.Chats;
 using SupportAssistant.Api.Mapping;
 using SupportAssistant.Application.Chats;
 
@@ -15,8 +16,9 @@ public class ChatFunction(IChatService service, IMapper mapper)
 
     [Function("Chat")]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "chat")] HttpRequest request,
-        CancellationToken  cancellationToken)
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "chat")]
+        HttpRequest request,
+        CancellationToken cancellationToken)
     {
         var command = await GetCommandAsync(request, cancellationToken);
         if (command == null)
@@ -34,13 +36,37 @@ public class ChatFunction(IChatService service, IMapper mapper)
             return new BadRequestObjectResult(new { error = "Question is too long." });
         }
 
-        var result = await service.HandleAsync(command, cancellationToken);
-        var response = mapper.MapChatResponse(result, request);
-        return new OkObjectResult(response);
-
+        return await RunAsync(command, request, cancellationToken);
     }
 
-    private async Task<ChatCommand?> GetCommandAsync(HttpRequest request, CancellationToken  cancellationToken)
+    private async Task<IActionResult> RunAsync(ChatCommand command, HttpRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var result = await service.HandleAsync(command, cancellationToken);
+            var response = mapper.MapChatResponse(result, request);
+            return new OkObjectResult(response);
+        }
+        catch (RequestFailedException)
+        {
+            return ObjectResultFactory.AzRequsetFailed(request);
+        }
+        catch (ClientResultException)
+        {
+            return ObjectResultFactory.AiRequestFailed(request);
+        }
+        catch (OperationCanceledException)
+        {
+            return ObjectResultFactory.RequestCanceled(request);
+        }
+        catch
+        {
+            return ObjectResultFactory.UnexpectedError(request);
+        }
+    }
+
+    private async Task<ChatCommand?> GetCommandAsync(HttpRequest request, CancellationToken cancellationToken)
     {
         try
         {
