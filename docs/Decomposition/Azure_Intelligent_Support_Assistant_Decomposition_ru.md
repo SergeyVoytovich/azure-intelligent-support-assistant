@@ -58,7 +58,7 @@
 * ~~**3.7** Расширить Azure Pipeline quality gates~~
 * ~~**3.8** Добавить static analysis~~
 * ~~**3.9** Добавить gitleaks / dependency scanning / Trivy~~
-* **3.10** Валидировать Bicep в CI
+* ~~**3.10** Валидировать Bicep в CI~~
 * **3.11** Настроить build artifacts
 * **3.12** Развернуть dev/test environment
 * **3.13** Автоматизировать deployment Azure Functions

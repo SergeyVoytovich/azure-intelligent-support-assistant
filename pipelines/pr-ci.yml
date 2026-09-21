@@ -60,6 +60,11 @@ steps:
         /repo
     displayName: Trivy filesystem scan
 
+  - script: |
+      az bicep install
+      az bicep build --file infra/main.bicep
+    displayName: Validate Bicep
+
   - script: >
       dotnet build
       src/SupportAssistant.slnx
