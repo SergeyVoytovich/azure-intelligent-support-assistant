@@ -1,38 +1,26 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
-  import { sendChatMessage } from '../services/chatService'
-  import type { ChatResponse } from '../models/chat'
+import { ref } from 'vue'
+import { useChat } from '../composables/useChat'
 
-  const question = ref('')
-  const result = ref<ChatResponse | null>(null)
-  const error = ref<string | null>(null)
-  const isLoading = ref(false)
+const question = ref('')
 
-  async function submit(): Promise<void> {
-    const trimmedQuestion = question.value.trim()
+const {
+  result,
+  error,
+  isLoading,
+  send
+} = useChat()
 
-    if (!trimmedQuestion) {
-      error.value = 'Please enter a question.'
-      return
-    }
+async function submit(): Promise<void> {
+  const trimmedQuestion = question.value.trim()
 
-    isLoading.value = true
-    error.value = null
-    result.value = null
-
-    try {
-      result.value = await sendChatMessage({
-        question: trimmedQuestion
-      })
-    } catch (exception) {
-      error.value =
-        exception instanceof Error
-          ? exception.message
-          : 'Unexpected error.'
-    } finally {
-      isLoading.value = false
-    }
+  if (!trimmedQuestion) {
+    error.value = 'Please enter a question.'
+    return
   }
+
+  await send(trimmedQuestion)
+}
 </script>
 
 <template>
