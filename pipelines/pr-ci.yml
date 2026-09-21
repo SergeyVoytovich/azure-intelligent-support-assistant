@@ -32,6 +32,15 @@ steps:
   - script: dotnet restore src/SupportAssistant.slnx
     displayName: Restore .NET
 
+  - script: |
+      docker run --rm \
+        -v "$(Build.SourcesDirectory):/repo" \
+        zricethezav/gitleaks:latest \
+        detect \
+        --source=/repo \
+        --no-git
+    displayName: Gitleaks secret scan
+
   - script: >
       dotnet build
       src/SupportAssistant.slnx
