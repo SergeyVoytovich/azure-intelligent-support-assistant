@@ -33,6 +33,14 @@ steps:
     displayName: Restore .NET
 
   - script: |
+      dotnet list src/SupportAssistant.slnx package --vulnerable --include-transitive
+    displayName: Scan .NET dependencies
+
+  - script: npm audit --audit-level=high
+    displayName: Scan frontend dependencies
+    workingDirectory: src/SupportAssistant.Web
+
+  - script: |
       docker run --rm \
         -v "$(Build.SourcesDirectory):/repo" \
         zricethezav/gitleaks:latest \
