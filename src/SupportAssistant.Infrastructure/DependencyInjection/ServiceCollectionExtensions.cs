@@ -25,20 +25,29 @@ public static class ServiceCollectionExtensions
             .AddSingleton(new DocumentIntelligenceClient(new Uri(config.DocumentsEndpoint), new DefaultAzureCredential()))
             .AddSingleton<IDocumentAnalyzer, AzureDocumentAnalyzer>()
             .AddScoped<IChatService, ChatService>()
-            .AddScoped<IAnswerGenerator, StubAnswerGenerator>()
+            .AddScoped<IAnswerGenerator, AzureOpenAiAnswerGenerator>()
             .AddSingleton<ITextChunker>(TextChunker.Default())
             .AddSingleton(new SearchIndexClient(new Uri(config.SearchEndpoint), new DefaultAzureCredential()))
             .AddSingleton<SearchIndexInitializer>()
             .AddSingleton(new SearchClient(new Uri(config.SearchEndpoint), SearchIndexDefinition.IndexName,  new DefaultAzureCredential()))
-            .AddSingleton(new AzureOpenAIClient(new Uri(config.FoundryEndpoint), new DefaultAzureCredential())
-                                .GetEmbeddingClient(config.EmbeddingDeployment))
+            .AddOpenAi(config)
             .AddSingleton<IEmbeddingGenerator, AzureOpenAiEmbeddingGenerator>()
             .AddSingleton(new BlobServiceClient(new Uri(config.BoobServiceEndpoint), new DefaultAzureCredential())
                                 .GetBlobContainerClient(config.ContainerName))
             .AddSingleton<KnowledgeIngestionService>()
             .AddSingleton<SearchDocumentIndexer>()
             .AddSingleton<IKnowledgeRetriever, AzureKnowledgeRetriever>()
+
         ;
+
+    private static IServiceCollection AddOpenAi(this IServiceCollection services, InfrastrubtireConfiguration config)
+    {
+        var openAiClient = new AzureOpenAIClient(new Uri(config.FoundryEndpoint), new DefaultAzureCredential());
+        return services
+                .AddSingleton(openAiClient.GetEmbeddingClient(config.EmbeddingDeployment))
+                .AddSingleton(openAiClient.GetChatClient(config.FoundryChatDeployment))
+            ;
+    }
 }
 
 

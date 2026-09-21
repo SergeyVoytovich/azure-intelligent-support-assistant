@@ -26,6 +26,8 @@ public static class ConfigurationManagerExtensions
     public static string GetDocumentIntelligenceEndpoint(this ConfigurationManager config)
         => config.GetRequired("DocumentIntelligence:Endpoint");
 
+    public static string FoundryChatDeployemnt(this IConfigurationManager config)
+        => config.GetRequired("Foundry:ChatDeployment");
 
     public static InfrastrubtireConfiguration GetInfrastructureConfiguration(this ConfigurationManager config)
         => new()
@@ -34,6 +36,7 @@ public static class ConfigurationManagerExtensions
             DocumentsEndpoint = config.GetDocumentIntelligenceEndpoint(),
             EmbeddingDeployment = config.GetEmbeddingDeplyment(),
             FoundryEndpoint = config.GetFoundryEndpoint(),
+            FoundryChatDeployment = config.GetFoundryEndpoint(),
             ContainerName = config.GetContainerName(),
             StorageAccountName = config.GetStorageAccountName()
         };
