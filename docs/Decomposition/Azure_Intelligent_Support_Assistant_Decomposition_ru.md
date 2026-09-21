@@ -1,6 +1,6 @@
 ## Общая декомпозиция проекта
 
-### Этап 1 — Engineering Foundation
+### +/- Этап 1 — Engineering Foundation
 
 * ~~**1.1** Создать публичный GitHub repository~~
 * ~~**1.2** Подготовить `main`, `develop`, правила именования веток~~

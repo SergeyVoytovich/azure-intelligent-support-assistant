@@ -15,18 +15,40 @@ public class ChatFunction(IChatService service, IMapper mapper)
 
     [Function("Chat")]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "chat")] HttpRequest request,
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "chat")] HttpRequest request,
         CancellationToken  cancellationToken)
     {
-        var body = await request.ReadFromJsonAsync<ChatRequest>(cancellationToken);
-        if (string.IsNullOrWhiteSpace(body?.Question))
+        var command = await GetCommandAsync(request, cancellationToken);
+        if (command == null)
         {
-            return new BadRequestObjectResult(new { error = "Questions is required" });
+            return new BadRequestObjectResult(new { error = "Request body is required." });
         }
 
-        var result = await Service.HandleAsync(new ChatCommand(body.Question), cancellationToken);
+        if (string.IsNullOrWhiteSpace(command.Question))
+        {
+            return new BadRequestObjectResult(new { error = "Question is required." });
+        }
+
+        if (command.Question.Length > 4000)
+        {
+            return new BadRequestObjectResult(new { error = "Question is too long." });
+        }
+
+        var result = await service.HandleAsync(command, cancellationToken);
         var response = mapper.MapChatResponse(result, request);
         return new OkObjectResult(response);
 
+    }
+
+    private async Task<ChatCommand?> GetCommandAsync(HttpRequest request, CancellationToken  cancellationToken)
+    {
+        try
+        {
+            return await request.ReadFromJsonAsync<ChatCommand>(cancellationToken);
+        }
+        catch
+        {
+            return null;
+        }
     }
 }
