@@ -60,3 +60,17 @@ steps:
   - script: npm test -- --run
     displayName: Test frontend
     workingDirectory: src/SupportAssistant.Web
+
+  - task: PublishTestResults@2
+    displayName: Publish .NET test results
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: '**/*.trx'
+      failTaskOnFailedTests: true
+
+  - task: PublishCodeCoverageResults@2
+    displayName: Publish .NET code coverage
+    condition: succeededOrFailed()
+    inputs:
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
