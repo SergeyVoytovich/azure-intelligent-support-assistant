@@ -40,7 +40,7 @@
 * ~~**2.11** Реализовать Prompt Builder через TDD~~
 * ~~**2.12** Интегрировать Azure OpenAI~~
 * ~~**2.13** Реализовать grounded response + sources~~
-* **2.14** Интегрировать Azure AI Language
+* ~~**2.14** Интегрировать Azure AI Language~~
 * **2.15** Реализовать Escalation Policy
 * **2.16** Укрепить `/api/chat`: validation, timeouts, ProblemDetails, correlation ID
 * **2.17** Добавить container integration tests
