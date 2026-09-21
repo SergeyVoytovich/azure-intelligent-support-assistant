@@ -6,11 +6,17 @@
     <!-- Enable common framework namespaces automatically -->
     <ImplicitUsings>enable</ImplicitUsings>
 
-    <!-- Use the recommended analyzer set for the installed .NET SDK -->
+    <!-- Enable .NET analyzers -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+
+    <!-- Use the latest recommended analyzer set -->
     <AnalysisLevel>latest-recommended</AnalysisLevel>
 
     <!-- Apply .editorconfig code-style rules during build -->
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+    <!-- Treat analyzer/compiler warnings as build errors -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <!-- Produce reproducible build outputs -->
     <Deterministic>true</Deterministic>
