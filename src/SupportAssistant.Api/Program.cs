@@ -1,8 +1,6 @@
 using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Azure.Functions.Worker.OpenTelemetry;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using SupportAssistant.Api.Configuration;
 using SupportAssistant.Api.Mapping;
 using SupportAssistant.Api.System;

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using SupportAssistant.Infrastructure.DependencyInjection;
+﻿using SupportAssistant.Infrastructure.DependencyInjection;
 
 namespace SupportAssistant.Api.Configuration;
 
