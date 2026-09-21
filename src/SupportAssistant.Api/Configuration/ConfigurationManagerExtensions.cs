@@ -26,18 +26,22 @@ public static class ConfigurationManagerExtensions
     public static string GetDocumentIntelligenceEndpoint(this ConfigurationManager config)
         => config.GetRequired("DocumentIntelligence:Endpoint");
 
-    public static string FoundryChatDeployemnt(this IConfigurationManager config)
+    public static string GetFoundryChatDeployemnt(this IConfigurationManager config)
         => config.GetRequired("Foundry:ChatDeployment");
 
-    public static InfrastrubtireConfiguration GetInfrastructureConfiguration(this ConfigurationManager config)
+    public static string GetFoundryResponsesEndpoint(this IConfigurationManager config)
+        => config.GetRequired("Foundry:ResponsesEndpoint");
+
+    public static InfrastructureConfiguration GetInfrastructureConfiguration(this ConfigurationManager config)
         => new()
         {
             SearchEndpoint = config.GetAzureSearchEndpoint(),
             DocumentsEndpoint = config.GetDocumentIntelligenceEndpoint(),
             EmbeddingDeployment = config.GetEmbeddingDeplyment(),
             FoundryEndpoint = config.GetFoundryEndpoint(),
-            FoundryChatDeployment = config.GetFoundryEndpoint(),
+            FoundryChatDeployment = config.GetFoundryChatDeployemnt(),
             ContainerName = config.GetContainerName(),
-            StorageAccountName = config.GetStorageAccountName()
+            StorageAccountName = config.GetStorageAccountName(),
+            FoundryResponsesEndpoint = config.GetFoundryResponsesEndpoint()
         };
 }

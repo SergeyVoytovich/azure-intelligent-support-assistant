@@ -22,9 +22,12 @@ if (EnvironmentVariables.IsApplicationinsightsConnected)
 }
 
 
+var infrastructureConfiguration = builder.Configuration.GetInfrastructureConfiguration();
+Console.WriteLine(infrastructureConfiguration);
+
 builder.Services
     .AddApplication()
-    .AddInfrastructure(builder.Configuration.GetInfrastructureConfiguration());
+    .AddInfrastructure(infrastructureConfiguration);
 
 builder.Services.AddAutoMapper(cnf => cnf.AddProfile<DtoProfile>());
 

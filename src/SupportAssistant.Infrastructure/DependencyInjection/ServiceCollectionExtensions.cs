@@ -1,10 +1,14 @@
-﻿using Azure.AI.DocumentIntelligence;
+﻿#pragma warning disable OPENAI001
+
+using System.ClientModel.Primitives;
+using Azure.AI.DocumentIntelligence;
 using Azure.AI.OpenAI;
 using Azure.Identity;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Indexes;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.DependencyInjection;
+using OpenAI.Responses;
 using SupportAssistant.Application.Chats;
 using SupportAssistant.Application.Documents;
 using SupportAssistant.Application.Embeddings;
@@ -20,34 +24,81 @@ namespace SupportAssistant.Infrastructure.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, InfrastrubtireConfiguration config)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, InfrastructureConfiguration config)
         => services
-            .AddSingleton(new DocumentIntelligenceClient(new Uri(config.DocumentsEndpoint), new DefaultAzureCredential()))
+            .AddDocumentIntelligenceClient(config)
             .AddSingleton<IDocumentAnalyzer, AzureDocumentAnalyzer>()
             .AddScoped<IChatService, ChatService>()
-            .AddScoped<IAnswerGenerator, AzureOpenAiAnswerGenerator>()
+            .AddAnswerGenerator(config)
             .AddSingleton<ITextChunker>(TextChunker.Default())
-            .AddSingleton(new SearchIndexClient(new Uri(config.SearchEndpoint), new DefaultAzureCredential()))
+            .AddSearchIndexClient(config)
             .AddSingleton<SearchIndexInitializer>()
-            .AddSingleton(new SearchClient(new Uri(config.SearchEndpoint), SearchIndexDefinition.IndexName,  new DefaultAzureCredential()))
+            .AddSingleton(new SearchClient(new Uri(config.SearchEndpoint), SearchIndexDefinition.IndexName,
+                new DefaultAzureCredential()))
             .AddOpenAi(config)
             .AddSingleton<IEmbeddingGenerator, AzureOpenAiEmbeddingGenerator>()
-            .AddSingleton(new BlobServiceClient(new Uri(config.BoobServiceEndpoint), new DefaultAzureCredential())
-                                .GetBlobContainerClient(config.ContainerName))
+            .AddBlobServiceClient(config)
             .AddSingleton<KnowledgeIngestionService>()
             .AddSingleton<SearchDocumentIndexer>()
-            .AddSingleton<IKnowledgeRetriever, AzureKnowledgeRetriever>()
+            .AddSingleton<IKnowledgeRetriever, AzureKnowledgeRetriever>();
 
+    private static IServiceCollection AddAnswerGenerator(this IServiceCollection services, InfrastructureConfiguration config)
+        => services.AddScoped<IAnswerGenerator>(p => new AzureOpenAiAnswerGenerator(
+                p.GetRequiredService<ResponsesClient>(),
+                p.GetRequiredService<IKnowledgeRetriever>(),
+                p.GetRequiredService<IPromptBuilder>(),
+                config.FoundryChatDeployment
+            ))
         ;
 
-    private static IServiceCollection AddOpenAi(this IServiceCollection services, InfrastrubtireConfiguration config)
+    private static IServiceCollection AddDocumentIntelligenceClient(this IServiceCollection services, InfrastructureConfiguration config)
+        => services.AddSingleton(
+                new DocumentIntelligenceClient(
+                    GetRequiredUri(config.DocumentsEndpoint, nameof(config.DocumentsEndpoint)),
+                    new DefaultAzureCredential()
+                )
+            );
+
+    private static IServiceCollection AddBlobServiceClient(this IServiceCollection services, InfrastructureConfiguration config)
+        => services.AddSingleton(
+            new BlobServiceClient(
+                    GetRequiredUri(config.BlobServiceEndpoint, nameof(config.BlobServiceEndpoint)),
+                    new DefaultAzureCredential()).GetBlobContainerClient(config.ContainerName)
+        );
+
+    private static IServiceCollection AddSearchIndexClient(this IServiceCollection services, InfrastructureConfiguration config)
+        => services.AddSingleton(
+            new SearchIndexClient(
+                GetRequiredUri(config.SearchEndpoint, nameof(config.SearchEndpoint)),
+                new DefaultAzureCredential())
+        );
+
+    private static IServiceCollection AddOpenAi(this IServiceCollection services, InfrastructureConfiguration config)
     {
-        var openAiClient = new AzureOpenAIClient(new Uri(config.FoundryEndpoint), new DefaultAzureCredential());
+        var openAiClient = new AzureOpenAIClient(
+            GetRequiredUri(config.FoundryEndpoint, nameof(config.FoundryEndpoint)),
+            new DefaultAzureCredential());
         return services
                 .AddSingleton(openAiClient.GetEmbeddingClient(config.EmbeddingDeployment))
-                .AddSingleton(openAiClient.GetChatClient(config.FoundryChatDeployment))
+                .AddResponseClient(config)
             ;
     }
+
+    private static IServiceCollection AddResponseClient(this IServiceCollection services, InfrastructureConfiguration config)
+        => services.AddSingleton<ResponsesClient>(_ =>
+        {
+            var tokenPolicy = new BearerTokenPolicy(new DefaultAzureCredential(), "https://ai.azure.com/.default");
+
+            return new ResponsesClient(
+                authenticationPolicy: tokenPolicy,
+                options: new ResponsesClientOptions
+                {
+                    Endpoint = GetRequiredUri(config.FoundryResponsesEndpoint, nameof(config.FoundryResponsesEndpoint))
+                });
+        });
+
+    private static Uri GetRequiredUri(string? value, string name)
+        => !Uri.TryCreate(value, UriKind.Absolute, out var uri)
+            ? throw new InvalidOperationException($"Configuration '{name}' contains invalid URI: '{value ?? "<null>"}'")
+            : uri;
 }
-
-

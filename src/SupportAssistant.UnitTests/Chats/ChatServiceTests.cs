@@ -21,9 +21,9 @@ public sealed class ChatServiceTests
 
     private sealed class FakeAnswerGenerator(string answer) : IAnswerGenerator
     {
-        public Task<string> GenerateAsync(string question, CancellationToken cancellationToken = default)
+        public Task<AnswerGenerationResult> GenerateAsync(string question, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(answer);
+            return Task.FromResult(new AnswerGenerationResult{Answer = answer});
         }
     }
 }

@@ -11,6 +11,6 @@ public class ChatService(IAnswerGenerator answerGenerator) : IChatService
 
         var answer = await AnswerGenerator.GenerateAsync(command.Question, cancellationToken);
 
-        return ChatResult.New(answer);
+        return ChatResult.New(answer.Answer, answer.Sources, false);
     }
 }

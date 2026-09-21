@@ -1,18 +1,21 @@
 ﻿using OpenAI.Chat;
+using OpenAI.Responses;
 using SupportAssistant.Application.Chats;
 using SupportAssistant.Application.Knowledge;
+#pragma warning disable OPENAI001
 
 namespace SupportAssistant.Infrastructure.Chats;
 
 public class AzureOpenAiAnswerGenerator(
-    ChatClient chatClient, IKnowledgeRetriever retriever, IPromptBuilder promptBuilder)
+    ResponsesClient chatClient, IKnowledgeRetriever retriever, IPromptBuilder promptBuilder, string endpoint)
     : IAnswerGenerator
 {
     protected virtual IPromptBuilder Builder { get; } = promptBuilder;
+    public string Endpoint { get; } = endpoint;
     protected virtual IKnowledgeRetriever Retriever { get; } = retriever;
-    protected virtual ChatClient Client { get; } = chatClient;
+    protected virtual ResponsesClient   Client { get; } = chatClient;
 
-    public async Task<string> GenerateAsync(string question, CancellationToken cancellationToken = default)
+    public async Task<AnswerGenerationResult> GenerateAsync(string question, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(question);
 
@@ -20,8 +23,17 @@ public class AzureOpenAiAnswerGenerator(
 
         var prompt = Builder.Build(question, knowledge);
 
-        var completion = await Client.CompleteChatAsync(prompt, cancellationToken);
+        var response =
+            await Client.CreateResponseAsync(
+                Endpoint,
+                prompt,
+                null,
+                cancellationToken);
 
-        return completion.Value.Content.First().Text;
+        return new AnswerGenerationResult
+        {
+            Answer = response.Value.GetOutputText(),
+            Sources = knowledge.Select(x => x.Source).Distinct(StringComparer.OrdinalIgnoreCase).ToArray()
+        };
     }
 }

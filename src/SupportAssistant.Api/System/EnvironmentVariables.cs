@@ -1,6 +1,4 @@
-﻿using SupportAssistant.Infrastructure.DependencyInjection;
-
-namespace SupportAssistant.Api.System;
+﻿namespace SupportAssistant.Api.System;
 
 public static class EnvironmentVariables
 {
