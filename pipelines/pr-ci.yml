@@ -49,6 +49,17 @@ steps:
         --no-git
     displayName: Gitleaks secret scan
 
+  - script: |
+      docker run --rm \
+        -v "$(Build.SourcesDirectory):/repo" \
+        aquasec/trivy:latest \
+        fs \
+        --severity HIGH,CRITICAL \
+        --exit-code 1 \
+        --no-progress \
+        /repo
+    displayName: Trivy filesystem scan
+
   - script: >
       dotnet build
       src/SupportAssistant.slnx

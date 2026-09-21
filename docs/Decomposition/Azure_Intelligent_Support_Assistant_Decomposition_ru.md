@@ -1,6 +1,6 @@
 ## Общая декомпозиция проекта
 
-### +/- Этап 1 — Engineering Foundation
+### + Этап 1 — Engineering Foundation
 
 * ~~**1.1** Создать публичный GitHub repository~~
 * ~~**1.2** Подготовить `main`, `develop`, правила именования веток~~
@@ -9,11 +9,11 @@
 * ~~**1.5** Создать .NET Solution и проекты Clean Architecture~~
 * ~~**1.6** Настроить `Directory.Build.props` и `Directory.Packages.props`~~
 * ~~**1.7** Создать первые unit/architecture test projects~~
-* **1.8** Создать Vue 3 + TypeScript + Vite frontend
-* **1.9** Добавить Vitest / Vue Test Utils
+* **1~~.8~~** ~~Создать Vue 3 + TypeScript + Vite frontend~~
+* ~~**1.9** Добавить Vitest / Vue Test Utils~~
 * ~~**1.10** Подготовить Dockerfile backend~~
-* **1.11** Подготовить Dockerfile frontend
-* ***1.12** **Создать Docker Compose с backend/frontend/Azurite/WireMock*
+* ~~**1.11** Подготовить Dockerfile frontend~~
+* ~~***1.12** **Создать Docker Compose с backend/frontend/Azurite/WireMock*~~
 * ~~**1.13** Сделать первый TDD vertical slice `POST /api/chat`~~
 * ~~**1.14** Создать Azure DevOps Project~~
 * ~~**1.15** Создать Azure Boards: Epic → Features → User Stories~~
@@ -49,15 +49,15 @@
 
 ### Этап 3 — Vue и Continuous Delivery
 
-* **3.1** Реализовать `SupportApiClient`
-* **3.2** Реализовать `useChat`
-* **3.3** Реализовать Vue chat UI
-* **3.4** Добавить loading/error/escalation states
-* **3.5** Показывать источники ответа
-* **3.6** Добавить frontend tests
-* **3.7** Расширить Azure Pipeline quality gates
-* **3.8** Добавить static analysis
-* **3.9** Добавить gitleaks / dependency scanning / Trivy
+* ~~**3.1** Реализовать `SupportApiClient`~~
+* ~~**3.2** Реализовать `useChat`~~
+* ~~**3.3** Реализовать Vue chat UI~~
+* ~~**3.4** Добавить loading/error/escalation states~~
+* ~~**3.5** Показывать источники ответа~~
+* ~~**3.6** Добавить frontend tests~~
+* ~~**3.7** Расширить Azure Pipeline quality gates~~
+* ~~**3.8** Добавить static analysis~~
+* ~~**3.9** Добавить gitleaks / dependency scanning / Trivy~~
 * **3.10** Валидировать Bicep в CI
 * **3.11** Настроить build artifacts
 * **3.12** Развернуть dev/test environment
