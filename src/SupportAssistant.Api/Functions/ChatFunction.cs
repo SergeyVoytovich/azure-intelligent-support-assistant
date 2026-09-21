@@ -1,4 +1,5 @@
 ﻿using System.ClientModel;
+using System.Text.Json;
 using AutoMapper;
 using Azure;
 using Microsoft.AspNetCore.Http;
@@ -20,7 +21,22 @@ public class ChatFunction(IChatService service, IMapper mapper)
         HttpRequest request,
         CancellationToken cancellationToken)
     {
-        var command = await GetCommandAsync(request, cancellationToken);
+        ChatCommand? command;
+
+        try
+        {
+            command = await request.ReadFromJsonAsync<ChatCommand>(cancellationToken);
+        }
+        catch (JsonException)
+        {
+            return new BadRequestObjectResult(new { error = "Invalid JSON request body." });
+        }
+        catch (BadHttpRequestException)
+        {
+            return new BadRequestObjectResult(new { error = "Invalid request body." });
+        }
+
+
         if (command == null)
         {
             return new BadRequestObjectResult(new { error = "Request body is required." });
@@ -63,18 +79,6 @@ public class ChatFunction(IChatService service, IMapper mapper)
         catch
         {
             return ObjectResultFactory.UnexpectedError(request);
-        }
-    }
-
-    private async Task<ChatCommand?> GetCommandAsync(HttpRequest request, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await request.ReadFromJsonAsync<ChatCommand>(cancellationToken);
-        }
-        catch
-        {
-            return null;
         }
     }
 }

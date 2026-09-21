@@ -19,7 +19,7 @@ public record InfrastructureConfiguration
            $"{nameof(SearchEndpoint)}: {SearchEndpoint}\r\n" +
            $"{nameof(FoundryEndpoint)}: {FoundryEndpoint}\r\n" +
            $"{nameof(FoundryChatDeployment)}: {FoundryChatDeployment}\r\n" +
-           $"{nameof(FoundryResponsesEndpoint)}: {EmbeddingDeployment}\r\n" +
+           $"{nameof(FoundryResponsesEndpoint)}: {FoundryResponsesEndpoint}\r\n" +
            $"{nameof(EmbeddingDeployment)}: {EmbeddingDeployment}\r\n" +
            $"{nameof(StorageAccountName)}: {StorageAccountName}\r\n" +
            $"{nameof(ContainerName)}: {ContainerName}\r\n" +
