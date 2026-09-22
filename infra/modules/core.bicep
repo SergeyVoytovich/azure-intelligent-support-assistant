@@ -65,3 +65,5 @@ resource search 'Microsoft.Search/searchServices@2025-05-01' = {
 
 output storageAccountName string = storage.name
 output searchServiceName string = search.name
+
+output knowledgeContainerName string = knowledgeContainer.name

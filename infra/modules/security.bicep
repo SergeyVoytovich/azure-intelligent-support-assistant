@@ -8,6 +8,9 @@ param searchService string
 param foundryName string
 param documentsName string
 
+@description('Retain existing assignment names; new environments use deterministic names.')
+param existingSearchRoleAssignmentNames object = {}
+
 var shortSuffix = take(suffix, 8)
 var shortName = '${prefix}-${environment}-${shortSuffix}'
 
@@ -131,7 +134,7 @@ var searchServiceContributorRoleId = subscriptionResourceId(
 )
 
 resource searchServiceContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(search.id, runtimeIdentity.id, searchServiceContributorRoleId)
+  name: existingSearchRoleAssignmentNames.?serviceContributor ?? guid(search.id, runtimeIdentity.id, searchServiceContributorRoleId)
   scope: search
   properties: {
     principalId: runtimeIdentity.properties.principalId
@@ -148,7 +151,7 @@ var searchIndexDataContributorRoleId = subscriptionResourceId(
 )
 
 resource searchIndexDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(search.id, runtimeIdentity.id, searchIndexDataContributorRoleId)
+  name: existingSearchRoleAssignmentNames.?indexDataContributor ?? guid(search.id, runtimeIdentity.id, searchIndexDataContributorRoleId)
   scope: search
   properties: {
     principalId: runtimeIdentity.properties.principalId

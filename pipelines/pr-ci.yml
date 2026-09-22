@@ -18,6 +18,9 @@ variables:
   buildConfiguration: Release
   azureServiceConnection: sc-isa-dev-wif
   functionAppName: func-isa-dev-uxfdhanjmza7m
+  resourceGroupName: rg-isa-dev-uxfdhanjmza7m
+  staticWebAppName: swa-isa-dev-uxfdhanjmza7m
+  apiBaseUrl: https://func-isa-dev-uxfdhanjmza7m.azurewebsites.net
 
 steps:
   - task: UseDotNet@2
@@ -88,6 +91,7 @@ steps:
   - script: |
       az bicep install
       az bicep build --file infra/main.bicep
+      az bicep build --file infra/web.bicep --stdout > /dev/null
     displayName: Validate Bicep
 
   # -------------------------
@@ -129,6 +133,8 @@ steps:
   - script: npm run build
     displayName: Build frontend
     workingDirectory: src/SupportAssistant.Web
+    env:
+      VITE_API_BASE_URL: '$(apiBaseUrl)'
 
   - script: npm test -- --run
     displayName: Test frontend
@@ -189,3 +195,57 @@ steps:
       isFlexConsumption: true
       appName: '$(functionAppName)'
       package: '$(Build.ArtifactStagingDirectory)/api'
+
+  # -------------------------
+  # Deploy the prebuilt frontend (dev only)
+  # -------------------------
+
+  - task: AzureCLI@2
+    displayName: Prepare Static Web App and API CORS
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+    inputs:
+      azureSubscription: '$(azureServiceConnection)'
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        set -euo pipefail
+        az deployment group create \
+          --resource-group "$(resourceGroupName)" \
+          --name isa-web-dev \
+          --template-file infra/web.bicep \
+          --parameters staticWebAppName="$(staticWebAppName)" environment=dev \
+          --only-show-errors --output none
+
+        webHost=$(az staticwebapp show \
+          --resource-group "$(resourceGroupName)" \
+          --name "$(staticWebAppName)" --query defaultHostname --output tsv)
+        if [ -z "$webHost" ] || [ "$webHost" = "None" ]; then
+          echo "Static Web App hostname is missing."
+          exit 1
+        fi
+        az functionapp cors add \
+          --resource-group "$(resourceGroupName)" \
+          --name "$(functionAppName)" \
+          --allowed-origins "https://$webHost" \
+          --only-show-errors --output none
+
+        deploymentToken=$(az staticwebapp secrets list \
+          --resource-group "$(resourceGroupName)" \
+          --name "$(staticWebAppName)" --query properties.apiKey --output tsv)
+        if [ -z "$deploymentToken" ] || [ "$deploymentToken" = "None" ]; then
+          echo "Static Web App deployment token is missing."
+          exit 1
+        fi
+        echo "##vso[task.setvariable variable=staticWebAppDeploymentToken;issecret=true]$deploymentToken"
+
+  - task: AzureStaticWebApp@0
+    displayName: Deploy frontend to Azure Static Web Apps
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+    inputs:
+      app_location: src/SupportAssistant.Web/dist
+      api_location: ''
+      output_location: ''
+      skip_app_build: true
+      skip_api_build: true
+      production_branch: dev
+      azure_static_web_apps_api_token: '$(staticWebAppDeploymentToken)'

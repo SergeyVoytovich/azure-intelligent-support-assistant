@@ -19,6 +19,10 @@ resource foundry 'Microsoft.CognitiveServices/accounts@2026-03-01' = {
   }
   properties:{
     allowProjectManagement: true
+    defaultProject: 'project-${shortName}'
+    associatedProjects: [
+      'project-${shortName}'
+    ]
     customSubDomainName: foundryName
     disableLocalAuth: true
     publicNetworkAccess: 'Enabled'
@@ -48,7 +52,9 @@ resource gptModel 'Microsoft.CognitiveServices/accounts/deployments@2026-03-01' 
     model: {
       format: 'OpenAI'
       name: 'gpt-4o'
+      version: '2024-11-20'
     }
+    raiPolicyName: 'Microsoft.DefaultV2'
     versionUpgradeOption: 'OnceNewDefaultVersionAvailable'
   }
   dependsOn: [  
@@ -67,7 +73,9 @@ resource embeddingModel 'Microsoft.CognitiveServices/accounts/deployments@2026-0
     model: {
       format: 'OpenAI'
       name: 'text-embedding-3-small'
+      version: '1'
     }
+    raiPolicyName: 'Microsoft.DefaultV2'
     versionUpgradeOption: 'OnceNewDefaultVersionAvailable'
   }
   dependsOn: [
@@ -114,7 +122,7 @@ resource documents 'Microsoft.CognitiveServices/accounts@2026-03-01' = {
 
 output foundryName string  = foundry.name
 output foundryProjectName string = project.name
-output foundryEndpoint string = foundry.properties.endpoint
+output foundryEndpoint string = foundry.properties.endpoints['AI Foundry API']
 output documentIntelligenceName string  = documents.name
 // output languageName string = lang.name
 output langungeEndpoint string  = foundry.properties.endpoint

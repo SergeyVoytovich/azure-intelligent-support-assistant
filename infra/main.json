@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.47.16.16243",
-      "templateHash": "9427002893004426370"
+      "templateHash": "6131005971106692859"
     }
   },
   "parameters": {
@@ -33,6 +33,13 @@
       "type": "string",
       "metadata": {
         "description": "Email address for Azure budget notifications."
+      }
+    },
+    "existingSearchRoleAssignmentNames": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Existing Search role assignment names to retain when adopting an environment."
       }
     }
   },
@@ -84,7 +91,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.47.16.16243",
-              "templateHash": "16126160345556944811"
+              "templateHash": "3824190811495632666"
             }
           },
           "parameters": {
@@ -173,6 +180,10 @@
             "searchServiceName": {
               "type": "string",
               "value": "[variables('searchServiceName')]"
+            },
+            "knowledgeContainerName": {
+              "type": "string",
+              "value": "[variables('knowledgeContainerName')]"
             }
           }
         }
@@ -212,7 +223,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.47.16.16243",
-              "templateHash": "15685571853134216846"
+              "templateHash": "6673758670859052590"
             }
           },
           "parameters": {
@@ -250,6 +261,10 @@
               },
               "properties": {
                 "allowProjectManagement": true,
+                "defaultProject": "[format('project-{0}', variables('shortName'))]",
+                "associatedProjects": [
+                  "[format('project-{0}', variables('shortName'))]"
+                ],
                 "customSubDomainName": "[variables('foundryName')]",
                 "disableLocalAuth": true,
                 "publicNetworkAccess": "Enabled"
@@ -281,8 +296,10 @@
               "properties": {
                 "model": {
                   "format": "OpenAI",
-                  "name": "gpt-4o"
+                  "name": "gpt-4o",
+                  "version": "2024-11-20"
                 },
+                "raiPolicyName": "Microsoft.DefaultV2",
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable"
               },
               "dependsOn": [
@@ -301,8 +318,10 @@
               "properties": {
                 "model": {
                   "format": "OpenAI",
-                  "name": "text-embedding-3-small"
+                  "name": "text-embedding-3-small",
+                  "version": "1"
                 },
+                "raiPolicyName": "Microsoft.DefaultV2",
                 "versionUpgradeOption": "OnceNewDefaultVersionAvailable"
               },
               "dependsOn": [
@@ -340,7 +359,7 @@
             },
             "foundryEndpoint": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', format('ai-{0}', variables('shortName'))), '2026-03-01').endpoint]"
+              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', format('ai-{0}', variables('shortName'))), '2026-03-01').endpoints['AI Foundry API']]"
             },
             "documentIntelligenceName": {
               "type": "string",
@@ -523,6 +542,9 @@
           },
           "documentsName": {
             "value": "[reference('ai').outputs.documentIntelligenceName.value]"
+          },
+          "existingSearchRoleAssignmentNames": {
+            "value": "[parameters('existingSearchRoleAssignmentNames')]"
           }
         },
         "template": {
@@ -532,7 +554,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.47.16.16243",
-              "templateHash": "2756761690571161561"
+              "templateHash": "15504235761989246343"
             }
           },
           "parameters": {
@@ -559,6 +581,13 @@
             },
             "documentsName": {
               "type": "string"
+            },
+            "existingSearchRoleAssignmentNames": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Retain existing assignment names; new environments use deterministic names."
+              }
             }
           },
           "variables": {
@@ -656,7 +685,7 @@
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
               "scope": "[resourceId('Microsoft.Search/searchServices', parameters('searchService'))]",
-              "name": "[guid(resourceId('Microsoft.Search/searchServices', parameters('searchService')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName'))), variables('searchServiceContributorRoleId'))]",
+              "name": "[coalesce(tryGet(parameters('existingSearchRoleAssignmentNames'), 'serviceContributor'), guid(resourceId('Microsoft.Search/searchServices', parameters('searchService')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName'))), variables('searchServiceContributorRoleId')))]",
               "properties": {
                 "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName'))), '2024-11-30').principalId]",
                 "principalType": "ServicePrincipal",
@@ -670,7 +699,7 @@
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
               "scope": "[resourceId('Microsoft.Search/searchServices', parameters('searchService'))]",
-              "name": "[guid(resourceId('Microsoft.Search/searchServices', parameters('searchService')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName'))), variables('searchIndexDataContributorRoleId'))]",
+              "name": "[coalesce(tryGet(parameters('existingSearchRoleAssignmentNames'), 'indexDataContributor'), guid(resourceId('Microsoft.Search/searchServices', parameters('searchService')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName'))), variables('searchIndexDataContributorRoleId')))]",
               "properties": {
                 "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName'))), '2024-11-30').principalId]",
                 "principalType": "ServicePrincipal",
@@ -793,7 +822,7 @@
             "value": "[reference('ai').outputs.langungeEndpoint.value]"
           },
           "knowledgeContainerName": {
-            "value": "[format('knowledge-{0}-{1}-{2}', variables('prefix'), parameters('environment'), variables('suffix'))]"
+            "value": "[reference('core').outputs.knowledgeContainerName.value]"
           },
           "chatDeployment": {
             "value": "gpt-4o"

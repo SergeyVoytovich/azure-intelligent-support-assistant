@@ -9,7 +9,7 @@
 * ~~**1.5** Создать .NET Solution и проекты Clean Architecture~~
 * ~~**1.6** Настроить `Directory.Build.props` и `Directory.Packages.props`~~
 * ~~**1.7** Создать первые unit/architecture test projects~~
-* **1~~.8~~** ~~Создать Vue 3 + TypeScript + Vite frontend~~
+* **1.8~~** ~~Создать Vue 3 + TypeScript + Vite frontend~~
 * ~~**1.9** Добавить Vitest / Vue Test Utils~~
 * ~~**1.10** Подготовить Dockerfile backend~~
 * ~~**1.11** Подготовить Dockerfile frontend~~
