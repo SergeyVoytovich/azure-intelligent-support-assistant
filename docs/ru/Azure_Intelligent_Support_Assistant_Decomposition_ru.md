@@ -67,12 +67,12 @@
 
 ### Этап 4 — Production hardening и portfolio
 
-* 4.1 Monitoring foundation: Application Insights + Log Analytics
-* 4.2 Три обязательных Alert Rules
-* 4.3 Azure Dashboard
-* 4.4 Cost overview
-* 4.5 Финальная Security / Best Practices проверка
-* 4.6 README + Architecture Diagram
+* ~~4.1 Monitoring foundation: Application Insights + Log Analytics~~
+* ~~4.2 Три обязательных Alert Rules~~
+* ~~4.3 Azure Dashboard~~
+* ~~4.4 Cost overview~~
+* ~~4.5 Финальная Security / Best Practices проверка~~
+* ~~4.6 README + Architecture Diagram~~
 * 4.7 Technical Documentation
 * 4.8 Отчет о размышлениях
 * 4.9 Финализация репозитория и `dev → main`
