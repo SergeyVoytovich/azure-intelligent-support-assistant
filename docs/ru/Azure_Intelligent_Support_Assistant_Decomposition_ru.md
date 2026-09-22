@@ -63,29 +63,34 @@
 * ~~**3.12** Развернуть dev/test environment~~
 * ~~**3.13** Автоматизировать deployment Azure Functions~~
 * ~~**3.14** Автоматизировать deployment Static Web Apps~~
-* **3.15** Добавить `/api/health`
-* **3.16** Добавить smoke tests
-* **3.17** Настроить `develop → dev/test`, `main → demo`
+* 3.15 Финальная схема веток и CI/CD
 
 ### Этап 4 — Production hardening и portfolio
 
-* **4.1** Application Insights
-* **4.2** Structured logging
-* **4.3** Custom metrics
-* **4.4** Log Analytics + KQL
-* **4.5** Error-rate alert
-* **4.6** Response-time alert
-* **4.7** Token-usage alert
-* **4.8** Dashboard / Workbook
-* **4.9** AI cost calculation
-* **4.10** Финальный RBAC/security review
-* **4.11** ADR
-* **4.12** Architecture diagram
-* **4.13** README EN/DE/RU
-* **4.14** Technical docs EN/DE/RU
-* **4.15** Reflection EN/DE/RU
-* **4.16** Demo guide EN/DE/RU
-* **4.17** Финальная проверка Git history
-* **4.18** `develop → main`
-* **4.19** GitHub Release `v1.0.0`
-* **4.20** Репетиция 10-минутного demo
+* 4.1 Monitoring foundation: Application Insights + Log Analytics
+* 4.2 Три обязательных Alert Rules
+* 4.3 Azure Dashboard
+* 4.4 Cost overview
+* 4.5 Финальная Security / Best Practices проверка
+* 4.6 README + Architecture Diagram
+* 4.7 Technical Documentation
+* 4.8 Отчет о размышлениях
+* 4.9 Финализация репозитория и `dev → main`
+* 4.10 Подготовка и репетиция 10-минутного Demo
+
+### Этап 5 — Дополнительно, только если останется время
+
+* 5.1 `/api/health`.
+* 5.2  Automated smoke tests.
+* 5.3 Отдельные Azure environments `dev/test/demo`.
+* 5.4 Расширенное structured logging.
+* 5.5 Общая система custom metrics.
+* 5.6 Отдельные ADR-файлы.
+* 5.7 README EN/RU.
+* 5.8 Technical Documentation EN/RU.
+* 5.9 Reflection EN/RU.
+* 5.10 Demo Guide EN/DE/RU.
+* 5.11 Красивое переписывание/чистка Git history.
+* 5.12 GitHub Release `v1.0.0`.
+* 5.13 Azure Workbook сверх обязательного Dashboard.
+* 5.14 Любой дополнительный portfolio polish.
