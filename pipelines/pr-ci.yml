@@ -38,6 +38,10 @@ steps:
   - script: dotnet restore src/SupportAssistant.slnx
     displayName: Restore .NET
 
+  # Solution restore does not invoke the Functions SDK post-restore hook (AZFW0108).
+  - script: dotnet restore src/SupportAssistant.Api/SupportAssistant.Api.csproj -p:Configuration=$(buildConfiguration)
+    displayName: Restore Azure Functions extensions
+
   - script: npm ci
     displayName: Install frontend dependencies
     workingDirectory: src/SupportAssistant.Web
