@@ -1,0 +1,56 @@
+# Run manually against the deployed dev environment after deployment.
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  buildConfiguration: Release
+  azureServiceConnection: sc-isa-dev-wif
+  functionAppName: func-isa-dev-uxfdhanjmza7m
+
+steps:
+  - task: UseDotNet@2
+    displayName: Use .NET 10
+    inputs:
+      packageType: sdk
+      version: 10.0.x
+
+  - script: dotnet restore src/SupportAssistant.slnx
+    displayName: Restore .NET
+
+  - script: dotnet restore src/SupportAssistant.Api/SupportAssistant.Api.csproj -p:Configuration=$(buildConfiguration)
+    displayName: Restore Azure Functions extensions
+
+  - script: >
+      dotnet build src/SupportAssistant.IntegrationTests/SupportAssistant.IntegrationTests.csproj
+      --configuration $(buildConfiguration) --no-restore -warnaserror
+    displayName: Build integration tests
+
+  - task: AzureCLI@2
+    displayName: Test deployed API and Azure services
+    timeoutInMinutes: 10
+    inputs:
+      azureSubscription: '$(azureServiceConnection)'
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        set -euo pipefail
+        apiHost=$(az functionapp list --query "[?name=='$(functionAppName)'].defaultHostName | [0]" --output tsv)
+        if [ -z "$apiHost" ] || [ "$apiHost" = "None" ]; then
+          echo "Function App not found. Deploy dev and verify service connection access before running integration tests."
+          exit 1
+        fi
+        export SUPPORT_ASSISTANT_API_BASE_URL="https://$apiHost"
+        dotnet test src/SupportAssistant.IntegrationTests/SupportAssistant.IntegrationTests.csproj \
+          --configuration $(buildConfiguration) --no-build --logger trx \
+          --results-directory "$(Agent.TempDirectory)/integration-results"
+
+  - task: PublishTestResults@2
+    displayName: Publish integration test results
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: '$(Agent.TempDirectory)/integration-results/*.trx'
+      failTaskOnFailedTests: true

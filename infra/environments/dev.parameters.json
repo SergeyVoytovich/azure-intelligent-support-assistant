@@ -1,0 +1,14 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environment": { "value": "dev" },
+    "location": { "value": "germanywestcentral" },
+    "existingSearchRoleAssignmentNames": {
+      "value": {
+        "serviceContributor": "12261dd4-1ab3-43cb-b8e2-d93fb8500eba",
+        "indexDataContributor": "b655cd21-070e-4ccd-9888-0f90f1021be9"
+      }
+    }
+  }
+}
