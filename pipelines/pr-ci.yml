@@ -73,6 +73,7 @@ steps:
         --severity HIGH,CRITICAL \
         --exit-code 1 \
         --no-progress \
+        --secret-config /repo/trivy-secret.yaml \
         /repo
     displayName: Trivy filesystem scan
 
