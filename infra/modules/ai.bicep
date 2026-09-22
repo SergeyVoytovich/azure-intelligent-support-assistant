@@ -35,9 +35,6 @@ resource project 'Microsoft.CognitiveServices/accounts/projects@2026-03-01' = {
   properties:{
     displayName: 'Support Assistant ${environment}'
   }
-  dependsOn: [
-    foundry 
-  ]
 }
 
 resource gptModel 'Microsoft.CognitiveServices/accounts/deployments@2026-03-01' = {

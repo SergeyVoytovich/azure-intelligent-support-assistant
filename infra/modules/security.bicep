@@ -107,6 +107,7 @@ resource storageTableContributor 'Microsoft.Authorization/roleAssignments@2022-0
 // Azure AI Search RBAC
 // ------------------------------------------------------------
 
+// Read documents from Azure AI Search index.
 var searchIndexDataReaderRoleId = subscriptionResourceId(
   'Microsoft.Authorization/roleDefinitions',
   '1407120a-92aa-4202-b7e9-c0e197c71c8f'
@@ -119,6 +120,40 @@ resource searchReader 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
     principalId: runtimeIdentity.properties.principalId
     principalType: 'ServicePrincipal'
     roleDefinitionId: searchIndexDataReaderRoleId
+  }
+}
+
+// Create and update Azure AI Search index definitions.
+// Required by SearchIndexInitializer.CreateOrUpdateIndexAsync().
+var searchServiceContributorRoleId = subscriptionResourceId(
+  'Microsoft.Authorization/roleDefinitions',
+  '7ca78c08-252a-4471-8644-bb5ff32d4ba0'
+)
+
+resource searchServiceContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(search.id, runtimeIdentity.id, searchServiceContributorRoleId)
+  scope: search
+  properties: {
+    principalId: runtimeIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: searchServiceContributorRoleId
+  }
+}
+
+// Add, update and delete documents inside Azure AI Search indexes.
+// Required by the knowledge ingestion pipeline.
+var searchIndexDataContributorRoleId = subscriptionResourceId(
+  'Microsoft.Authorization/roleDefinitions',
+  '8ebe5a00-799e-43f5-93ac-243d3dce84a7'
+)
+
+resource searchIndexDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(search.id, runtimeIdentity.id, searchIndexDataContributorRoleId)
+  scope: search
+  properties: {
+    principalId: runtimeIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: searchIndexDataContributorRoleId
   }
 }
 

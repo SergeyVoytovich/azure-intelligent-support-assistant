@@ -61,7 +61,7 @@
 * ~~**3.10** Валидировать Bicep в CI~~
 * ~~**3.11** Настроить build artifacts~~
 * ~~**3.12** Развернуть dev/test environment~~
-* **3.13** Автоматизировать deployment Azure Functions
+* ~~**3.13** Автоматизировать deployment Azure Functions~~
 * **3.14** Автоматизировать deployment Static Web Apps
 * **3.15** Добавить `/api/health`
 * **3.16** Добавить smoke tests

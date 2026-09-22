@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.47.16.16243",
-      "templateHash": "4525603928429142709"
+      "templateHash": "9427002893004426370"
     }
   },
   "parameters": {
@@ -84,7 +84,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.47.16.16243",
-              "templateHash": "2377444134509040374"
+              "templateHash": "16126160345556944811"
             }
           },
           "parameters": {
@@ -155,7 +155,13 @@
                 "replicaCount": 1,
                 "hostingMode": "Default",
                 "publicNetworkAccess": "Enabled",
-                "disableLocalAuth": false
+                "disableLocalAuth": false,
+                "authOptions": {
+                  "aadOrApiKey": {
+                    "aadAuthFailureMode": "http401WithBearerChallenge"
+                  }
+                },
+                "semanticSearch": "free"
               }
             }
           ],
@@ -526,7 +532,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.47.16.16243",
-              "templateHash": "5348827031230503754"
+              "templateHash": "2756761690571161561"
             }
           },
           "parameters": {
@@ -563,6 +569,8 @@
             "storageQueueDataContributorRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '974c5e8b-45b9-4653-ba55-5f855dd0fb88')]",
             "storageTableDataContributorRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3')]",
             "searchIndexDataReaderRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '1407120a-92aa-4202-b7e9-c0e197c71c8f')]",
+            "searchServiceContributorRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7ca78c08-252a-4471-8644-bb5ff32d4ba0')]",
+            "searchIndexDataContributorRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8ebe5a00-799e-43f5-93ac-243d3dce84a7')]",
             "openAiUserRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd')]",
             "languageReaderRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7628b7b8-a8b2-4cdc-b46f-e9b35248918e')]",
             "cognitiveServicesUserRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a97b65f3-24c7-4388-baec-2e87135dc908')]"
@@ -639,6 +647,34 @@
                 "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName'))), '2024-11-30').principalId]",
                 "principalType": "ServicePrincipal",
                 "roleDefinitionId": "[variables('searchIndexDataReaderRoleId')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Search/searchServices', parameters('searchService'))]",
+              "name": "[guid(resourceId('Microsoft.Search/searchServices', parameters('searchService')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName'))), variables('searchServiceContributorRoleId'))]",
+              "properties": {
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName'))), '2024-11-30').principalId]",
+                "principalType": "ServicePrincipal",
+                "roleDefinitionId": "[variables('searchServiceContributorRoleId')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Search/searchServices', parameters('searchService'))]",
+              "name": "[guid(resourceId('Microsoft.Search/searchServices', parameters('searchService')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName'))), variables('searchIndexDataContributorRoleId'))]",
+              "properties": {
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName'))), '2024-11-30').principalId]",
+                "principalType": "ServicePrincipal",
+                "roleDefinitionId": "[variables('searchIndexDataContributorRoleId')]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', variables('shortName')))]"
@@ -773,7 +809,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.47.16.16243",
-              "templateHash": "11945291697777480432"
+              "templateHash": "15122295209057440687"
             }
           },
           "parameters": {
@@ -884,6 +920,7 @@
                 "AzureWebJobsStorage__accountName": "[parameters('storageAccountName')]",
                 "AzureWebJobsStorage__credential": "managedidentity",
                 "AzureWebJobsStorage__clientId": "[parameters('runtimeIdentityClientId')]",
+                "AZURE_CLIENT_ID": "[parameters('runtimeIdentityClientId')]",
                 "DocumentIntelligence__Endpoint": "[parameters('documentIntelligenceEndpoint')]",
                 "AzureSearch__Endpoint": "[parameters('searchEndpoint')]",
                 "Foundry__Endpoint": "[parameters('foundryEndpoint')]",

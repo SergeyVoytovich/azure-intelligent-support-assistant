@@ -142,6 +142,8 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       AzureWebJobsStorage__accountName: storageAccountName
       AzureWebJobsStorage__credential: 'managedidentity'
       AzureWebJobsStorage__clientId: runtimeIdentityClientId
+      
+      AZURE_CLIENT_ID: runtimeIdentityClientId
 
       DocumentIntelligence__Endpoint: documentIntelligenceEndpoint
       AzureSearch__Endpoint: searchEndpoint
