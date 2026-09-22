@@ -74,7 +74,7 @@
 * ~~4.5 Финальная Security / Best Practices проверка~~
 * ~~4.6 README + Architecture Diagram~~
 * ~~4.7 Technical Documentation~~
-* 4.8 Отчет о размышлениях
+* ~~4.8 Отчет о размышлениях~~
 * 4.9 Финализация репозитория и `dev → main`
 * 4.10 Подготовка и репетиция 10-минутного Demo
 
