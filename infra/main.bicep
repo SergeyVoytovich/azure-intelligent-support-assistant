@@ -10,6 +10,9 @@ param environment string = 'dev'
 @description('Email address for Azure budget notifications.')
 param budgetContactEmail string
 
+@description('Existing Search role assignment names to retain when adopting an environment.')
+param existingSearchRoleAssignmentNames object = {}
+
 var resourcerGroupName string = 'dev'
 var suffix  = uniqueString(subscription().id, resourcerGroupName)
 var prefix = 'isa'
@@ -66,6 +69,7 @@ module security 'modules/security.bicep' = {
         searchService: core.outputs.searchServiceName
         foundryName: ai.outputs.foundryName
         documentsName: ai.outputs.documentIntelligenceName
+        existingSearchRoleAssignmentNames: existingSearchRoleAssignmentNames
     }
 }
 
@@ -92,7 +96,7 @@ module app 'modules/app.bicep' = {
 
     languageEndpoint: ai.outputs.langungeEndpoint
 
-    knowledgeContainerName: 'knowledge-${prefix}-${environment}-${suffix}'
+    knowledgeContainerName: core.outputs.knowledgeContainerName
 
     chatDeployment: 'gpt-4o'
     embeddingDeployment: 'text-embedding-3-small'

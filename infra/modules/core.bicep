@@ -41,16 +41,29 @@ var searchServiceName = 'search-${shortName}'
 resource search 'Microsoft.Search/searchServices@2025-05-01' = {
   name: searchServiceName
   location: location
+
   sku: {
-      name: 'free'
+    name: 'free'
   }
+
   properties: {
     replicaCount: 1
     hostingMode: 'Default'
     publicNetworkAccess: 'Enabled'
+
     disableLocalAuth: false
+
+    authOptions: {
+      aadOrApiKey: {
+        aadAuthFailureMode: 'http401WithBearerChallenge'
+      }
+    }
+
+    semanticSearch: 'free'
   }
 }
 
 output storageAccountName string = storage.name
 output searchServiceName string = search.name
+
+output knowledgeContainerName string = knowledgeContainer.name
