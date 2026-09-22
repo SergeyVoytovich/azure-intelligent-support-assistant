@@ -30,7 +30,7 @@ public sealed class DocumentAnalysisTests
     public async Task NullDocumentIsRejectedBeforeCallingAzure()
     {
         var client = new StubDocumentClient("text", 1);
-        await Assert.ThrowsAsync<ArgumentNullException>("document", () => new AzureDocumentAnalyzer(client).AnalyzeAsync(null!));
+        await Assert.ThrowsAsync<ArgumentNullException>("stream", () => new AzureDocumentAnalyzer(client).AnalyzeAsync(null!));
         Assert.Null(client.Data);
     }
 

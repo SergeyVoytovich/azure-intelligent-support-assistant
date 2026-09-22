@@ -104,12 +104,23 @@ steps:
 
   - script: >
       dotnet test
-      src/SupportAssistant.slnx
+      src/SupportAssistant.UnitTests/SupportAssistant.UnitTests.csproj
       --configuration $(buildConfiguration)
       --no-build
       --logger trx
       --collect:"XPlat Code Coverage"
-    displayName: Test .NET
+    displayName: Test .NET unit tests
+
+  - script: >
+      dotnet test
+      src/SupportAssistant.ArchitectureTests/SupportAssistant.ArchitectureTests.csproj
+      --configuration $(buildConfiguration)
+      --no-build
+      --logger trx
+      --collect:"XPlat Code Coverage"
+    displayName: Test .NET architecture
+
+  # Live API and Azure checks run separately via integration-tests.yml.
 
   # -------------------------
   # Frontend build and tests

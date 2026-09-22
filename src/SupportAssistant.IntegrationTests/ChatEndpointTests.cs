@@ -7,7 +7,7 @@ public sealed class ChatEndpointTests
 {
     private static readonly HttpClient Client = new()
     {
-        BaseAddress = new Uri("http://localhost:7071")
+        BaseAddress = new Uri(Environment.GetEnvironmentVariable("SUPPORT_ASSISTANT_API_BASE_URL") ?? "http://localhost:7071")
     };
 
     [Fact]
