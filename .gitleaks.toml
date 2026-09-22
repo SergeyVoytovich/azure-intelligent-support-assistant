@@ -1,0 +1,22 @@
+title = "Support Assistant secret scanning"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "generic-api-key"
+
+[[rules.allowlists]]
+description = "Public Azurite emulator key in local Docker Compose only"
+condition = "AND"
+paths = ['''(^|/)docker-compose\.yml$''']
+regexTarget = "secret"
+# https://learn.microsoft.com/azure/storage/common/storage-connect-azurite
+regexes = ['''^Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==$''']
+
+[[rules.allowlists]]
+description = "Document identifier in the mocked Azure AI Search indexing response"
+condition = "AND"
+paths = ['''(^|/)src/SupportAssistant\.UnitTests/Search/SearchServicesTests\.cs$''']
+regexTarget = "secret"
+regexes = ['''^return-policy-2$''']

@@ -60,7 +60,9 @@ steps:
         zricethezav/gitleaks:latest \
         detect \
         --source=/repo \
-        --no-git
+        --no-git \
+        --verbose \
+        --redact=100
     displayName: Gitleaks secret scan
 
   - script: |
