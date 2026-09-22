@@ -1,0 +1,27 @@
+<Project>
+  <PropertyGroup>
+    <!-- Enable nullable reference type analysis for all projects -->
+    <Nullable>enable</Nullable>
+
+    <!-- Enable common framework namespaces automatically -->
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Enable .NET analyzers -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+
+    <!-- Use the latest recommended analyzer set -->
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+
+    <!-- Apply .editorconfig code-style rules during build -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+    <!-- Treat analyzer/compiler warnings as build errors -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <!-- Produce reproducible build outputs -->
+    <Deterministic>true</Deterministic>
+
+    <!-- Enable additional deterministic CI behaviour in pipelines -->
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+</Project>

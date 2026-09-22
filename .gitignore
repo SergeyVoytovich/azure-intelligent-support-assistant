@@ -132,4 +132,39 @@ Desktop.ini
 *.swp
 *~
 
+# ---------------------------------------------------------
+# Azure / Publish
+# ---------------------------------------------------------
 
+*.azurePubxml
+*.publishsettings
+*.pubxml
+PublishScripts/
+
+
+# JetBrains user-specific settings
+*.DotSettings.user
+
+
+# Frontend / Node
+src/SupportAssistant.Web/node_modules/
+src/SupportAssistant.Web/dist/
+src/SupportAssistant.Web/.vite/
+src/SupportAssistant.Web/coverage/
+
+# Local environment files
+src/SupportAssistant.Web/.env
+src/SupportAssistant.Web/.env.local
+src/SupportAssistant.Web/.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+.env
+.env.*
+!.env.example
+
+.artifacts/

@@ -1,0 +1,5 @@
+[*.cs]
+# Test cases keep their expected values next to the assertion for readability.
+dotnet_diagnostic.CA1861.severity = none
+# Existing test names use underscores to separate scenario and expected result.
+dotnet_diagnostic.CA1707.severity = none

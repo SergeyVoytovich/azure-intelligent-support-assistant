@@ -1,0 +1,191 @@
+trigger:
+  branches:
+    include:
+      - dev
+      - main
+
+pr:
+  autoCancel: true
+  branches:
+    include:
+      - dev
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  buildConfiguration: Release
+  azureServiceConnection: sc-isa-dev-wif
+  functionAppName: func-isa-dev-uxfdhanjmza7m
+
+steps:
+  - task: UseDotNet@2
+    displayName: Use .NET 10
+    inputs:
+      packageType: sdk
+      version: 10.0.x
+
+  - task: NodeTool@0
+    displayName: Use Node 24
+    inputs:
+      versionSpec: 24.x
+
+  # -------------------------
+  # Restore dependencies
+  # -------------------------
+
+  - script: dotnet restore src/SupportAssistant.slnx
+    displayName: Restore .NET
+
+  # Solution restore does not invoke the Functions SDK post-restore hook (AZFW0108).
+  - script: dotnet restore src/SupportAssistant.Api/SupportAssistant.Api.csproj -p:Configuration=$(buildConfiguration)
+    displayName: Restore Azure Functions extensions
+
+  - script: npm ci
+    displayName: Install frontend dependencies
+    workingDirectory: src/SupportAssistant.Web
+
+  # -------------------------
+  # Security scans
+  # -------------------------
+
+  - script: |
+      dotnet list src/SupportAssistant.slnx package --vulnerable --include-transitive
+    displayName: Scan .NET dependencies
+
+  - script: npm audit --audit-level=high
+    displayName: Scan frontend dependencies
+    workingDirectory: src/SupportAssistant.Web
+
+  - script: |
+      docker run --rm \
+        -v "$(Build.SourcesDirectory):/repo" \
+        zricethezav/gitleaks:latest \
+        detect \
+        --source=/repo \
+        --no-git \
+        --verbose \
+        --redact=100
+    displayName: Gitleaks secret scan
+
+  - script: |
+      docker run --rm \
+        -v "$(Build.SourcesDirectory):/repo" \
+        aquasec/trivy:latest \
+        fs \
+        --severity HIGH,CRITICAL \
+        --exit-code 1 \
+        --no-progress \
+        --secret-config /repo/trivy-secret.yaml \
+        /repo
+    displayName: Trivy filesystem scan
+
+  # -------------------------
+  # Bicep validation
+  # -------------------------
+
+  - script: |
+      az bicep install
+      az bicep build --file infra/main.bicep
+    displayName: Validate Bicep
+
+  # -------------------------
+  # Backend build and tests
+  # -------------------------
+
+  - script: >
+      dotnet build
+      src/SupportAssistant.slnx
+      --configuration $(buildConfiguration)
+      --no-restore
+      -warnaserror
+    displayName: Build .NET
+
+  - script: >
+      dotnet test
+      src/SupportAssistant.UnitTests/SupportAssistant.UnitTests.csproj
+      --configuration $(buildConfiguration)
+      --no-build
+      --logger trx
+      --collect:"XPlat Code Coverage"
+    displayName: Test .NET unit tests
+
+  - script: >
+      dotnet test
+      src/SupportAssistant.ArchitectureTests/SupportAssistant.ArchitectureTests.csproj
+      --configuration $(buildConfiguration)
+      --no-build
+      --logger trx
+      --collect:"XPlat Code Coverage"
+    displayName: Test .NET architecture
+
+  # Live API and Azure checks run separately via integration-tests.yml.
+
+  # -------------------------
+  # Frontend build and tests
+  # -------------------------
+
+  - script: npm run build
+    displayName: Build frontend
+    workingDirectory: src/SupportAssistant.Web
+
+  - script: npm test -- --run
+    displayName: Test frontend
+    workingDirectory: src/SupportAssistant.Web
+
+  # -------------------------
+  # Test reports
+  # -------------------------
+
+  - task: PublishTestResults@2
+    displayName: Publish .NET test results
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: '**/*.trx'
+      failTaskOnFailedTests: true
+
+  - task: PublishCodeCoverageResults@2
+    displayName: Publish .NET code coverage
+    condition: succeededOrFailed()
+    inputs:
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
+
+  # -------------------------
+  # Build artifacts
+  # -------------------------
+
+  - script: >
+      dotnet publish
+      src/SupportAssistant.Api/SupportAssistant.Api.csproj
+      --configuration $(buildConfiguration)
+      --output $(Build.ArtifactStagingDirectory)/api
+      --no-build
+    displayName: Publish backend
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish backend artifact
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)/api'
+      artifact: api
+
+  - task: PublishPipelineArtifact@1
+    displayName: Publish frontend artifact
+    inputs:
+      targetPath: 'src/SupportAssistant.Web/dist'
+      artifact: web
+
+  # -------------------------
+  # Deploy backend to Azure
+  # -------------------------
+
+  - task: AzureFunctionApp@2
+    displayName: Deploy backend to Azure Functions
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+    inputs:
+      azureSubscription: '$(azureServiceConnection)'
+      appType: functionAppLinux
+      isFlexConsumption: true
+      appName: '$(functionAppName)'
+      package: '$(Build.ArtifactStagingDirectory)/api'
