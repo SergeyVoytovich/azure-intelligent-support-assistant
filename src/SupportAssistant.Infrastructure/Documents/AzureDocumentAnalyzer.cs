@@ -8,13 +8,13 @@ public class AzureDocumentAnalyzer(DocumentIntelligenceClient client) : IDocumen
 {
     protected virtual DocumentIntelligenceClient Client { get; } = client;
 
-    public async Task<DocumentAnalysis> AnalyzeAsync(Stream document,  CancellationToken cancellationToken = default)
+    public async Task<DocumentAnalysis> AnalyzeAsync(Stream stream, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(document);
+        ArgumentNullException.ThrowIfNull(stream);
 
-        var data = await BinaryData.FromStreamAsync(document, cancellationToken);
+        var data = await BinaryData.FromStreamAsync(stream, cancellationToken);
 
-        Operation<AnalyzeResult> operation = await Client.AnalyzeDocumentAsync(WaitUntil.Completed, "prebuilt-layout", data, cancellationToken);
+        var operation = await Client.AnalyzeDocumentAsync(WaitUntil.Completed, "prebuilt-layout", data, cancellationToken);
 
         var result = operation.Value;
 

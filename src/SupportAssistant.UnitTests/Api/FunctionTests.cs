@@ -6,11 +6,13 @@ using Azure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
+using OpenAI.Chat;
 using SupportAssistant.Api.Contracts.Chats;
 using SupportAssistant.Api.Functions;
 using SupportAssistant.Api.Mapping;
 using SupportAssistant.Application.Chats;
 using SupportAssistant.Application.Knowledge;
+using ChatFunction = SupportAssistant.Api.Functions.ChatFunction;
 
 namespace SupportAssistant.UnitTests.Api;
 
@@ -39,7 +41,7 @@ public sealed class FunctionTests
         var service = new StubChatService();
         var request = Request(body);
         using var stream = request.Body;
-        var result = Assert.IsType<BadRequestObjectResult>(await new ChatFunction(service, CreateMapper()).RunAsync(request, default));
+        var result = Assert.IsType<BadRequestObjectResult>(await new ChatFunction(service, CreateMapper(), NullLogger<ChatFunction>.Instance).RunAsync(request, default));
         Assert.Equal(error, JsonSerializer.SerializeToElement(result.Value).GetProperty("error").GetString());
         Assert.Empty(service.Calls);
     }
@@ -54,7 +56,7 @@ public sealed class FunctionTests
         var request = Request(JsonSerializer.Serialize(new { question }));
         using var stream = request.Body;
         using var cancellation = new CancellationTokenSource();
-        var result = await new ChatFunction(service, CreateMapper()).RunAsync(request, cancellation.Token);
+        var result = await new ChatFunction(service, CreateMapper(), NullLogger<ChatFunction>.Instance).RunAsync(request, cancellation.Token);
 
         if (accepted)
         {
@@ -89,7 +91,7 @@ public sealed class FunctionTests
         };
         var request = Request("""{"question":"Help me"}""");
         using var stream = request.Body;
-        var result = Assert.IsType<ObjectResult>(await new ChatFunction(new StubChatService { Failure = failure }, CreateMapper()).RunAsync(request, default));
+        var result = Assert.IsType<ObjectResult>(await new ChatFunction(new StubChatService { Failure = failure }, CreateMapper(), NullLogger<ChatFunction>.Instance).RunAsync(request, default));
         Assert.Equal(status, result.StatusCode);
         var body = JsonSerializer.SerializeToElement(result.Value);
         Assert.Equal(message, body.GetProperty("error").GetString());
@@ -105,7 +107,7 @@ public sealed class FunctionTests
         using var stream = new BrokenRequestStream();
         request.Body = stream;
         var service = new StubChatService();
-        var result = Assert.IsType<BadRequestObjectResult>(await new ChatFunction(service, CreateMapper()).RunAsync(request, default));
+        var result = Assert.IsType<BadRequestObjectResult>(await new ChatFunction(service, CreateMapper(), NullLogger<ChatFunction>.Instance).RunAsync(request, default));
         Assert.Equal("Invalid request body.", JsonSerializer.SerializeToElement(result.Value).GetProperty("error").GetString());
         Assert.Empty(service.Calls);
     }
@@ -113,8 +115,8 @@ public sealed class FunctionTests
     [Fact]
     public void ChatConstructorRejectsMissingDependencies()
     {
-        Assert.Throws<ArgumentNullException>("service", () => new ChatFunction(null!, CreateMapper()));
-        Assert.Throws<ArgumentNullException>("mapper", () => new ChatFunction(new StubChatService(), null!));
+        Assert.Throws<ArgumentNullException>("service", () => new ChatFunction(null!, CreateMapper(), NullLogger<ChatFunction>.Instance));
+        Assert.Throws<ArgumentNullException>("mapper", () => new ChatFunction(new StubChatService(), null!, NullLogger<ChatFunction>.Instance));
     }
 
     [Theory]

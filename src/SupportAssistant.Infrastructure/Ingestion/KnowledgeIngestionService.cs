@@ -15,6 +15,12 @@ public class KnowledgeIngestionService(
     SearchIndexInitializer indexInitializer,
     ILogger<SearchDocumentIndexer> logger)
 {
+    private static readonly Action<ILogger, string, int, int, Exception?> LogBlobProcessed =
+        LoggerMessage.Define<string, int, int>(
+            LogLevel.Warning,
+            new EventId(2001, nameof(RunAsync)),
+            "Blob {BlobName}: extracted {CharacterCount} chars, created {ChunkCount} chunks.");
+
     protected virtual BlobContainerClient BlobContainerClient { get; } = blobContainerClient;
     protected virtual IDocumentAnalyzer DocumentAnalyzer { get; } = documentAnalyzer;
     protected virtual ITextChunker TextChunker { get; } = textChunker;
@@ -22,7 +28,8 @@ public class KnowledgeIngestionService(
     protected virtual SearchIndexInitializer IndexInitializer { get; } = indexInitializer;
     protected ILogger<SearchDocumentIndexer> Logger { get; } = logger;
 
-    public async Task<IngestionResult> RunAsync(CancellationToken cancellationToken = default)
+    public async Task<IngestionResult> RunAsync(
+        CancellationToken cancellationToken = default)
     {
         await IndexInitializer.EnsureCreatedAsync(cancellationToken);
 
@@ -31,42 +38,75 @@ public class KnowledgeIngestionService(
         var chunkCount = 0;
         var blobNames = new List<string>();
 
-        await foreach (var blobItem in BlobContainerClient.GetBlobsAsync(cancellationToken: cancellationToken))
+        await foreach (
+            var blobItem in BlobContainerClient.GetBlobsAsync(
+                cancellationToken: cancellationToken))
         {
             var result = await RunAsync(blobItem, cancellationToken);
+
             blobCount += result.BlobCount;
             pdfCount += result.PdfCount;
             chunkCount += result.ChunkCount;
             blobNames.Add(result.BlobNames.Single());
         }
 
-        return new IngestionResult(blobCount, pdfCount, chunkCount, blobNames);
+        return new IngestionResult(
+            blobCount,
+            pdfCount,
+            chunkCount,
+            blobNames);
     }
 
-    protected virtual async Task<IngestionResult> RunAsync(BlobItem blobItem, CancellationToken cancellationToken = default)
+    protected virtual async Task<IngestionResult> RunAsync(
+        BlobItem blobItem,
+        CancellationToken cancellationToken = default)
     {
-        if (!blobItem.Name.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+        if (!blobItem.Name.EndsWith(
+                ".pdf",
+                StringComparison.OrdinalIgnoreCase))
         {
-            return new IngestionResult(1, 0, 0, [blobItem.Name]);
+            return new IngestionResult(
+                1,
+                0,
+                0,
+                [blobItem.Name]);
         }
 
-        var blobClient = BlobContainerClient.GetBlobClient(blobItem.Name);
+        var blobClient =
+            BlobContainerClient.GetBlobClient(blobItem.Name);
 
-        await using var stream = await blobClient.OpenReadAsync(cancellationToken: cancellationToken);
+        await using var stream =
+            await blobClient.OpenReadAsync(
+                cancellationToken: cancellationToken);
 
-        var analysis = await DocumentAnalyzer.AnalyzeAsync(stream, cancellationToken);
+        var analysis =
+            await DocumentAnalyzer.AnalyzeAsync(
+                stream,
+                cancellationToken);
 
-        var chunks = TextChunker.Chunk(analysis.Content, blobItem.Name);
+        var chunks =
+            TextChunker.Chunk(
+                analysis.Content,
+                blobItem.Name);
 
-        Console.WriteLine($"Blob {blobItem.Name}: {analysis.Content.Length} chars, {chunks.Count} chunks.");
-        Logger.LogWarning(
-            $"Blob {blobItem.Name}: extracted {analysis.Content.Length} chars, created {chunks.Count} chunks.",
+        Console.WriteLine(
+            $"Blob {blobItem.Name}: {analysis.Content.Length} chars, {chunks.Count} chunks.");
+
+        LogBlobProcessed(
+            Logger,
             blobItem.Name,
             analysis.Content.Length,
-            chunks.Count);
+            chunks.Count,
+            null);
 
-        await DocumentIndexer.IndexAsync(chunks, cancellationToken);
+        await DocumentIndexer.IndexAsync(
+            chunks,
+            cancellationToken);
 
-        return new IngestionResult(1, 1, chunks.Count, [blobItem.Name]);
+        return new IngestionResult(
+            1,
+            1,
+            chunks.Count,
+            [blobItem.Name]);
     }
 }
