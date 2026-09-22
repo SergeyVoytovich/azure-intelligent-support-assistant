@@ -86,6 +86,7 @@ module app 'modules/app.bicep' = {
     runtimeIdentityClientId: security.outputs.identityClientId
 
     storageAccountName: core.outputs.storageAccountName
+    applicationInsightsConnectionString: core.outputs.applicationInsightsConnectionString
 
     searchEndpoint: 'https://${core.outputs.searchServiceName}.search.windows.net'
 
