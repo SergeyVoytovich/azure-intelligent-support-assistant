@@ -47,7 +47,7 @@
 * ~~**2.18** Добавить реальные Azure integration tests~~
 * ~~**2.19** Довести coverage минимум до 70%~~
 
-### Этап 3 — Vue и Continuous Delivery
+### + Этап 3 — Vue и Continuous Delivery
 
 * ~~**3.1** Реализовать `SupportApiClient`~~
 * ~~**3.2** Реализовать `useChat`~~
@@ -63,7 +63,7 @@
 * ~~**3.12** Развернуть dev/test environment~~
 * ~~**3.13** Автоматизировать deployment Azure Functions~~
 * ~~**3.14** Автоматизировать deployment Static Web Apps~~
-* 3.15 Финальная схема веток и CI/CD
+* ~~3.15 Финальная схема веток и CI/CD~~
 
 ### Этап 4 — Production hardening и portfolio
 
