@@ -69,6 +69,36 @@ module security 'modules/security.bicep' = {
     }
 }
 
+module app 'modules/app.bicep' = {
+  name: '${prefix}-app-${environment}'
+  scope: rg
+  params: {
+    location: location
+    environment: environment
+    prefix: prefix
+    suffix: suffix
+
+    runtimeIdentityName: security.outputs.identityName
+    runtimeIdentityClientId: security.outputs.identityClientId
+
+    storageAccountName: core.outputs.storageAccountName
+
+    searchEndpoint: 'https://${core.outputs.searchServiceName}.search.windows.net'
+
+    foundryEndpoint: ai.outputs.foundryEndpoint
+    foundryResponsesEndpoint: '${ai.outputs.foundryEndpoint}openai/v1/'
+
+    documentIntelligenceEndpoint: 'https://${ai.outputs.documentIntelligenceName}.cognitiveservices.azure.com/'
+
+    languageEndpoint: ai.outputs.langungeEndpoint
+
+    knowledgeContainerName: 'knowledge-${prefix}-${environment}-${suffix}'
+
+    chatDeployment: 'gpt-4o'
+    embeddingDeployment: 'text-embedding-3-small'
+  }
+}
+
 output resourceGroupName string = rg.name
 
 output storageAccountName string = core.outputs.storageAccountName
@@ -83,3 +113,5 @@ output languageEndpoint string = ai.outputs.langungeEndpoint
 output buddgetName string = budget.outputs.budgetName
 output runtimeIdentityName string = security.outputs.identityName
 output runtimeIdentityClientId string = security.outputs.identityClientId
+output functionAppName string = app.outputs.functionAppName
+output functionAppHostname string = app.outputs.functionAppHostname
