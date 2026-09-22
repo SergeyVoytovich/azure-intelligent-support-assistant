@@ -6,7 +6,7 @@ describe('App', () => {
   it('renders support assistant title', () => {
     const wrapper = mount(App)
 
-    expect(wrapper.text())
-      .toContain('SVoy Electronics Support Assistant')
+    expect(wrapper.get('header .eyebrow').text()).toBe('SVoy Electronics')
+    expect(wrapper.get('h1').text()).toBe('Support Assistant')
   })
 })
