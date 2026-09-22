@@ -16,6 +16,8 @@ pool:
 
 variables:
   buildConfiguration: Release
+  azureServiceConnection: sc-isa-dev-wif
+  functionAppName: func-isa-dev-uxfdhanjmza7m
 
 steps:
   - task: UseDotNet@2
@@ -155,3 +157,17 @@ steps:
     inputs:
       targetPath: 'src/SupportAssistant.Web/dist'
       artifact: web
+
+  # -------------------------
+  # Deploy backend to Azure
+  # -------------------------
+
+  - task: AzureFunctionApp@2
+    displayName: Deploy backend to Azure Functions
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+    inputs:
+      azureSubscription: '$(azureServiceConnection)'
+      appType: functionAppLinux
+      isFlexConsumption: true
+      appName: '$(functionAppName)'
+      package: '$(Build.ArtifactStagingDirectory)/api'
