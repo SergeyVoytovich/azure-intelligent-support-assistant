@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.47.16.16243",
-      "templateHash": "6131005971106692859"
+      "templateHash": "1815088198181071909"
     }
   },
   "parameters": {
@@ -91,7 +91,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.47.16.16243",
-              "templateHash": "3824190811495632666"
+              "templateHash": "16520739498996538339"
             }
           },
           "parameters": {
@@ -113,7 +113,9 @@
             "storageAccountName": "[format('storage{0}{1}{2}', parameters('prefix'), parameters('environment'), variables('shortSuffix'))]",
             "shortName": "[format('{0}-{1}-{2}', parameters('prefix'), parameters('environment'), variables('shortSuffix'))]",
             "knowledgeContainerName": "[format('knowledge-{0}', variables('shortName'))]",
-            "searchServiceName": "[format('search-{0}', variables('shortName'))]"
+            "searchServiceName": "[format('search-{0}', variables('shortName'))]",
+            "logAnalyticsWorkspaceName": "[format('log-{0}', variables('shortName'))]",
+            "applicationInsightsName": "[format('appi-{0}', variables('shortName'))]"
           },
           "resources": [
             {
@@ -170,6 +172,41 @@
                 },
                 "semanticSearch": "free"
               }
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2025-02-01",
+              "name": "[variables('logAnalyticsWorkspaceName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "retentionInDays": 30,
+                "sku": {
+                  "name": "PerGB2018"
+                },
+                "features": {
+                  "enableLogAccessUsingOnlyResourcePermissions": true
+                },
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+              }
+            },
+            {
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[variables('applicationInsightsName')]",
+              "location": "[parameters('location')]",
+              "kind": "web",
+              "properties": {
+                "Application_Type": "web",
+                "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]",
+                "RetentionInDays": 30,
+                "SamplingPercentage": 100,
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsWorkspaceName'))]"
+              ]
             }
           ],
           "outputs": {
@@ -184,6 +221,18 @@
             "knowledgeContainerName": {
               "type": "string",
               "value": "[variables('knowledgeContainerName')]"
+            },
+            "applicationInsightsConnectionString": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Insights/components', variables('applicationInsightsName')), '2020-02-02').ConnectionString]"
+            },
+            "applicationInsightsName": {
+              "type": "string",
+              "value": "[variables('applicationInsightsName')]"
+            },
+            "logAnalyticsWorkspaceName": {
+              "type": "string",
+              "value": "[variables('logAnalyticsWorkspaceName')]"
             }
           }
         }
@@ -806,6 +855,9 @@
           "storageAccountName": {
             "value": "[reference('core').outputs.storageAccountName.value]"
           },
+          "applicationInsightsConnectionString": {
+            "value": "[reference('core').outputs.applicationInsightsConnectionString.value]"
+          },
           "searchEndpoint": {
             "value": "[format('https://{0}.search.windows.net', reference('core').outputs.searchServiceName.value)]"
           },
@@ -838,7 +890,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.47.16.16243",
-              "templateHash": "15122295209057440687"
+              "templateHash": "10922181735040544420"
             }
           },
           "parameters": {
@@ -882,6 +934,12 @@
               "type": "string",
               "metadata": {
                 "description": "Existing storage account name."
+              }
+            },
+            "applicationInsightsConnectionString": {
+              "type": "string",
+              "metadata": {
+                "description": "Application Insights cooonection string"
               }
             },
             "searchEndpoint": {
@@ -950,6 +1008,7 @@
                 "AzureWebJobsStorage__credential": "managedidentity",
                 "AzureWebJobsStorage__clientId": "[parameters('runtimeIdentityClientId')]",
                 "AZURE_CLIENT_ID": "[parameters('runtimeIdentityClientId')]",
+                "APPLICATIONINSIGHTS_CONNECTION_STRING": "[parameters('applicationInsightsConnectionString')]",
                 "DocumentIntelligence__Endpoint": "[parameters('documentIntelligenceEndpoint')]",
                 "AzureSearch__Endpoint": "[parameters('searchEndpoint')]",
                 "Foundry__Endpoint": "[parameters('foundryEndpoint')]",

@@ -19,6 +19,9 @@ param runtimeIdentityClientId string
 @description('Existing storage account name.')
 param storageAccountName string
 
+@description('Application Insights cooonection string')
+param applicationInsightsConnectionString string
+
 @description('Azure AI Search endpoint.')
 param searchEndpoint string
 
@@ -144,6 +147,7 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
       AzureWebJobsStorage__clientId: runtimeIdentityClientId
       
       AZURE_CLIENT_ID: runtimeIdentityClientId
+      APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsightsConnectionString
 
       DocumentIntelligence__Endpoint: documentIntelligenceEndpoint
       AzureSearch__Endpoint: searchEndpoint
